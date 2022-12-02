@@ -1,12 +1,13 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests.
+# This workflow will do a clean installation of node dependencies,
+# cache/restore them, build the source code and run tests.
 
 name: Build and Test CI
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "develop" ]
+    branches: [ "main" ]
 
 jobs:
   build:

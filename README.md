@@ -1,8 +1,8 @@
 # psl-parser
 
-[![Build and Test CI](https://github.com/ing-bank/vscode-psl/actions/workflows/build_test_vscode.yml/badge.svg)](https://github.com/ing-bank/vscode-psl/actions/workflows/build_test_vscode.yml)
+[![Build and Test CI](https://github.com/ing-bank/psl-parser/actions/workflows/build_test.yml/badge.svg)](https://github.com/ing-bank/psl-parser/actions/workflows/build_test.yml)
 
-TypeScript implementation of a Profile Scripting Language Parser.
+Implementation of a Profile Scripting Language Parser in TypeScript.
 
 ## Usage
 
@@ -18,6 +18,19 @@ parsedPsl.methods.forEach(method => {
 
 ## Development
 
-If you would like to join the development of this extension, you will need to install [node.js](https://nodejs.org/en/) (with npm) in order to install the dependencies.
+If you would like to join the development of this extension, you will need to  
+install [node.js] (with npm) in order to install the dependencies.
 
-Once you clone the project, from the command line in the root of this project, run `npm install`.
+Once you clone the project, from the command line in the root of this project,  
+run `npm install`.
+
+## History
+
+This project was originally developed under [ing-bank/vscode-psl] repository,  
+in order to preserve that history this project was cloned from  
+[ing-bank/vscode-psl] and only code relevant to the psl-parser was retained.  
+Please refer to the [split commit] for details. 
+
+[split commit]: <https://github.com/ing-bank/psl-parser/commit/4814107ce1840d92c2ab0de99e31887014453d4c>
+[ing-bank/vscode-psl]: <https://github.com/ing-bank/vscode-psl.git>
+[node.js]: <https://nodejs.org/en>

@@ -9,23 +9,27 @@
     "scripting",
     "language"
   ],
-  "homepage": "https://github.com/ing-bank/vscode-psl#readme",
+  "homepage": "https://github.com/ing-bank/psl-parser#readme",
   "bugs": {
-    "url": "https://github.com/ing-bank/vscode-psl/issues"
+    "url": "https://github.com/ing-bank/psl-parser/issues"
   },
   "license": "MIT",
   "author": "atiplea",
   "contributors": [
     "SOliveira"
   ],
-  "main": "out/index.js",
+  "main": "lib/index.js",
+  "types": "lib/types/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ing-bank/vscode-psl.git"
+    "url": "https://github.com/ing-bank/psl-parser.git"
   },
   "scripts": {
-    "compile": "tsc -p ./",
-    "watch": "npm run compile -- -watch",
+    "clean": "rimraf lib",
+    "buildts": "tsc",
+    "build": "npm run clean && npm run buildts",
+    "lint": "tslint -c tslint.json --project .",
+    "watch": "npm run build -- -watch",
     "test": "jest"
   },
   "dependencies": {
@@ -39,6 +43,7 @@
     "ts-jest": "^29.0.3",
     "tslint": "^5.20.1",
     "typescript": "^4.8.4",
-    "jsonc-parser": "^3.2.0"
+    "jsonc-parser": "^3.2.0",
+    "rimraf": "^3.0.2"
   }
 }

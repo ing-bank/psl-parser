@@ -1,8 +1,8 @@
 import {
 	BinaryOperator, DeclarationStatement, Expression, Identifier, MultiSet, NumericLiteral,
 	PostCondition, Statement, StatementParser, StringLiteral, SyntaxKind, TypeIdentifier, Value,
-} from '../src/parser/statementParser';
-import { getTokens, Token } from '../src/parser/tokenizer';
+} from '../src/statementParser';
+import { getTokens, Token } from '../src/tokenizer';
 
 function parse(text: string) {
 	return new StatementParser(getTokens(text));

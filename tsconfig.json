@@ -5,16 +5,11 @@
         "lib": [
             "es2017"
         ],
-        "outDir": "out",
-        "declaration": true,
+        "outDir": "lib",
         "sourceMap": true,
-        "rootDir": "."
+        "declaration": true,
+        "declarationDir": "lib/types",
+        "rootDir": "src/"
     },
-    "formatCodeOptions": {
-        "newLine": "LF"
-    },
-    "exclude": [
-        "node_modules",
-        "out"
-    ]
+    "include": ["src/**/*"]
 }

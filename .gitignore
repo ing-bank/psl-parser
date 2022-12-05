@@ -1,8 +1,9 @@
-*.jrnl
-*.log
-out
-node_modules
-*.vsix
-.project
-.settings
-.classpath
+# Dependency directory
+node_modules/
+
+# Editors
+.idea/
+
+# Project build
+lib/
+*.tgz

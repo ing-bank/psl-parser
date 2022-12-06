@@ -157,7 +157,7 @@ export interface ParsedDocument {
 	declarations: Declaration[];
 
 	/**
-	 * An array of PROPERTYDEFs
+	 * An array of PROPERTYDEF
 	 */
 	properties: Property[];
 
@@ -328,16 +328,17 @@ class Parser {
 					if (documentation) this.activeMethod.documentation = documentation;
 				}
 			}
-			else if (this.activeToken.isNewLine()) continue;
-			else this.throwAwayTokensTil(Type.NewLine);
+			else if (!this.activeToken.isNewLine()) {
+				this.throwAwayTokensTil(Type.NewLine);
+			}
 		}
 		return {
 			comments: this.comments,
 			declarations: this.declarations,
 			extending: this.extending,
-			pslPackage: this.pslPackage,
 			methods: this.methods,
 			properties: this.properties,
+			pslPackage: this.pslPackage,
 			tokens: this.tokens,
 		};
 	}
@@ -580,7 +581,9 @@ class Parser {
 	}
 
 	private throwAwayTokensTil(type: Type) {
-		while (this.next() && this.activeToken.type !== type);
+		while (this.next()) {
+			if (this.activeToken.type === type) break;
+		}
 	}
 
 	private loadTokenBuffer() {

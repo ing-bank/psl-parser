@@ -25,11 +25,11 @@
     "url": "https://github.com/ing-bank/psl-parser.git"
   },
   "scripts": {
-    "clean": "rimraf lib",
-    "buildts": "tsc",
-    "build": "npm run clean && npm run buildts",
+    "prebuild": "rimraf lib",
+    "build": "tsc --build src",
     "lint": "tslint -c tslint.json --project .",
     "watch": "npm run build -- -watch",
+    "pretest": "tsc --build src",
     "test": "jest"
   },
   "dependencies": {

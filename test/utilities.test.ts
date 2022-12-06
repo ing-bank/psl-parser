@@ -1,6 +1,6 @@
 import * as path from 'path';
+import { MemberClass, ParsedDocument, parseFile } from '../src';
 import { FinderPaths } from '../src/config';
-import { MemberClass, ParsedDocument, parseFile } from '../src/parser';
 import * as tokenizer from '../src/tokenizer';
 import * as utilities from '../src/utilities';
 
@@ -69,7 +69,7 @@ describe('completion', () => {
 		expect(result[1].value).toBe('b');
 	});
 	test('dot with parens content with parens', () => {
-		const tokensOnLine: tokenizer.Token[] = getTokens('a(blah(bleh())).b');
+		const tokensOnLine: tokenizer.Token[] = getTokens('a(blah(blah())).b');
 		const index = 10;
 		const result = utilities.getCallTokens(tokensOnLine, index);
 		expect(result[0].value).toBe('a');
@@ -82,7 +82,7 @@ describe('completion', () => {
 		expect(result[0].value).toBe('a');
 		expect(result[1].value).toBe('.');
 	});
-	test('clusterfuck', () => {
+	test('clusterDuck', () => {
 		const tokensOnLine: tokenizer.Token[] = getTokens('a.b().c(x(y)).d');
 		const index = 14;
 		const result = utilities.getCallTokens(tokensOnLine, index);
@@ -91,7 +91,7 @@ describe('completion', () => {
 		expect(result[2].value).toBe('c');
 		expect(result[3].value).toBe('d');
 	});
-	test('clusterfuck2', () => {
+	test('clusterDuck2', () => {
 		const tokensOnLine: tokenizer.Token[] = getTokens('a.b().c(x(y)).d');
 		const index = 14;
 		const result = utilities.getCallTokens(tokensOnLine, index);
@@ -132,7 +132,7 @@ describe('ParsedDocFinder', () => {
 			projectPsl: [filesDir],
 			tables: [],
 		};
-	}
+	};
 
 	beforeAll(async () => {
 		filesDir = path.resolve('test', 'files');
@@ -171,7 +171,7 @@ describe('ParsedDocFinder', () => {
 		expect(result.fsPath).toBe(childFilePath);
 	});
 
-	test('Find method overriden method in child', async () => {
+	test('Find method overridden method in child', async () => {
 		const paths = getPaths(childFilePath);
 		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(parsedChild, paths);
 		const result = await searchParser(finder, 'methodInParentAndChild', { character: 0, line: 0 });

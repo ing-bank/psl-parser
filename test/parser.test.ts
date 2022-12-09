@@ -1,5 +1,5 @@
-import * as parser from '../src/parser/parser';
-import * as tokenizer from '../src/parser/tokenizer';
+import * as parser from '../src/parser';
+import * as tokenizer from '../src/tokenizer';
 
 function getMethod(methodString: string): parser.Method | undefined {
 	const d = parser.parseText(methodString);
@@ -209,7 +209,7 @@ describe('Argument Names', () => {
 		expect(argNameValues).toEqual(['x1', 'x2']);
 	});
 
-	test('1 argument multitype', () => {
+	test('1 argument multi type', () => {
 		const methodString = 'public static void main(void x1(Integer, Record))';
 		const result = getMethod(methodString);
 		if (!result) {
@@ -220,7 +220,7 @@ describe('Argument Names', () => {
 		expect(argNameValues).toEqual(['x1']);
 	});
 
-	test('2 argument multitype', () => {
+	test('2 argument multi type', () => {
 		const methodString = 'public static void main(void x1(Integer, Record), void x2(void, String))';
 		const result = getMethod(methodString);
 		if (!result) {
@@ -231,7 +231,7 @@ describe('Argument Names', () => {
 		expect(argNameValues).toEqual(['x1', 'x2']);
 	});
 
-	test('2 argument multitype', () => {
+	test('2 argument multiline and multi type', () => {
 		const methodString = 'public static void main(void x1(Integer, Record)\n\t, void x2(void, String))';
 		const result = getMethod(methodString);
 		if (!result) {
@@ -299,7 +299,7 @@ describe('Argument Types', () => {
 		expect(argValues).toEqual([['String']]);
 	});
 
-	test('1 argument multitype', () => {
+	test('1 argument multi type', () => {
 		const methodString = 'public static void main(String x1(Number))';
 		const result = getMethod(methodString);
 		if (!result) {
@@ -681,7 +681,7 @@ describe('type declarations', () => {
 		expect(doc.declarations[0].types[0].value).toEqual('String');
 		expect(doc.declarations[0].id.value).toEqual('x');
 	});
-	test('mutliple type declaration', () => {
+	test('multiple type declaration', () => {
 		const declarationString = '\ttype public literal String x,y';
 		const doc = getParsedDoc(declarationString);
 		expect(doc.declarations[0].types[0].value).toEqual('String');
@@ -689,7 +689,7 @@ describe('type declarations', () => {
 		expect(doc.declarations[1].types[0].value).toEqual('String');
 		expect(doc.declarations[1].id.value).toEqual('y');
 	});
-	test('mutliple multitype type declaration', () => {
+	test('multiple multi type type declaration', () => {
 		const declarationString = '\ttype public literal String x(Number,Boolean),y';
 		const doc = getParsedDoc(declarationString);
 		expect(doc.declarations[0].types[0].value).toEqual('String');
@@ -699,7 +699,7 @@ describe('type declarations', () => {
 		expect(doc.declarations[1].types[0].value).toEqual('String');
 		expect(doc.declarations[1].id.value).toEqual('y');
 	});
-	test('mutliple type declaration equal sign', () => {
+	test('multiple type declaration equal sign', () => {
 		const declarationString = '\ttype String x = "hi", y = "hi"';
 		const doc = getParsedDoc(declarationString);
 		expect(doc.declarations[0].types[0].value).toEqual('String');

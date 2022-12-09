@@ -1,4 +1,4 @@
-import { getTokens, Token, Type } from './tokenizer';
+import {getTokens, Token, Type} from './tokenizer';
 
 export enum SyntaxKind {
 	ASSIGNMENT,
@@ -402,7 +402,7 @@ export class StatementParser {
 		const spaceOrExpression = this.activeToken;
 		if (spaceOrExpression.isSpace()) {
 			this.next();
-			return forStatement; // argumentless for
+			return forStatement; // argument less for
 		}
 		const expression = this.parseExpression();
 		if (expression) forStatement.expressions.push(expression);
@@ -484,13 +484,12 @@ export class StatementParser {
 		while (this.activeToken && this.activeToken.isColon()) {
 			const colonToken = this.activeToken;
 			this.next(true);
-			const colon: BinaryOperator = {
+			rootNode = {
 				kind: SyntaxKind.BINARY_OPERATOR,
 				left: rootNode,
 				operator: [colonToken],
 				right: this.parseValue(),
 			};
-			rootNode = colon;
 		}
 		return rootNode;
 	}
@@ -747,6 +746,7 @@ export function forEachChild(node: Node, f: (n: Node) => boolean) {
 			const declaration = node as DeclarationStatement;
 			if (declaration.args) declaration.args.forEach(arg => forEachChild(arg, f));
 			f(declaration.type);
+			break;
 		case SyntaxKind.NUMERIC_LITERAL:
 		case SyntaxKind.STRING_LITERAL:
 			f(node);

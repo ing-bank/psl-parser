@@ -1,6 +1,13 @@
-*.ts
-!*.d.ts
-tsconfig.json
-*.tgz
-.npmrc*
+# Exclude all files
+*
+
+# Add lib/
+!lib/**
+# Exclude exceptions from lib/
 *.map
+*.tsbuildinfo
+
+# Add documentation
+!LICENSE
+!CHANGELOG.md
+!README.md

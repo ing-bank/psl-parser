@@ -1,8 +1,8 @@
 import {
 	BinaryOperator, DeclarationStatement, Expression, Identifier, MultiSet, NumericLiteral,
 	PostCondition, Statement, StatementParser, StringLiteral, SyntaxKind, TypeIdentifier, Value,
-} from '../src/parser/statementParser';
-import { getTokens, Token } from '../src/parser/tokenizer';
+} from '../src';
+import { getTokens, Token } from '../src/tokenizer';
 
 function parse(text: string) {
 	return new StatementParser(getTokens(text));
@@ -126,18 +126,18 @@ describe('recursive tests', () => {
 		expect(start.id).toBe(parser.tokens[2]);
 	});
 	test('Runtime start', () => {
-		const parser = parse('Runtime.start("BA",varlist)');
+		const parser = parse('Runtime.start("BA",varList)');
 		const dotNode = parser.parseExpression() as BinaryOperator;
 		const runtime = dotNode.left as Identifier;
 		const start = dotNode.right as Identifier;
 		const args = start.args as Value[];
 		const ba = args[0];
-		const varlist = args[1];
+		const varList = args[1];
 		expect(dotNode.kind === SyntaxKind.BINARY_OPERATOR);
 		expect(runtime.id).toBe(parser.tokens[0]);
 		expect((start).id).toBe(parser.tokens[2]);
 		expect(ba.id).toBe(parser.tokens[5]);
-		expect(varlist.id).toBe(parser.tokens[8]);
+		expect(varList.id).toBe(parser.tokens[8]);
 	});
 	test('grandchild', () => {
 		const parser = parse('a.b.c');
@@ -545,7 +545,7 @@ describe('recursive tests', () => {
 		expect(i.id.value).toBe('i');
 		expect(initial.id.value).toBe('1');
 	});
-	test('argumentless for loop', () => {
+	test('argument less for loop', () => {
 		const parser = parse('for  set x = 1');
 		const statements = parser.parseLine();
 		const forStatement = statements[0];
@@ -563,7 +563,7 @@ describe('recursive tests', () => {
 		expect(args.length).toBe(3);
 	});
 	test('for order', () => {
-		const parser = parse('for  set seq=tras(seq).order() quit:seq.isNull()  do set(tras(seq))');
+		const parser = parse('for  set seq=array(seq).order() quit:seq.isNull()  do set(array(seq))');
 		const statements = parser.parseLine();
 		const setStatement = statements[1];
 		const equal = setStatement.expressions[0] as BinaryOperator;

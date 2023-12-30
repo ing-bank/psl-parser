@@ -16,16 +16,22 @@
   "license": "MIT",
   "author": "atiplea",
   "contributors": [
-    "SOliveira"
+    "SOliveira",
+    {
+      "name": "Mischa Reitsma",
+      "email": "Mischa.Reitsma@ing.com",
+      "url": "https://github.com/mischareitsma"
+    }
   ],
   "main": "lib/index.js",
   "types": "lib/types/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ing-bank/psl-parser.git"
+    "url": "git@github.com:ing-bank/psl-parser.git"
   },
   "scripts": {
-    "prebuild": "rimraf lib",
+    "clean": "rimraf lib",
+    "prebuild": "npm run clean",
     "build": "tsc --build src",
     "lint": "tslint -c tslint.json --project .",
     "watch": "npm run build -- -watch",

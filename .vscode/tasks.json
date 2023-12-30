@@ -31,6 +31,13 @@
                 "panel": "new"
             },
             "problemMatcher": []
-        }
+        },
+        {
+            "type": "npm",
+            "script": "build",
+            "problemMatcher": [
+                "$eslint-stylish"
+            ],
+        },
     ]
 }

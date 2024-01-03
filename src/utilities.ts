@@ -103,7 +103,7 @@ export class ParsedDocFinder {
 				if (!result || (result.fsPath === this.paths.activeRoutine && !result.member)) {
 					result = await finder.searchInDocument(token.value);
 				}
-				if (!result) return;
+				if (!result) return null;
 				if (!callTokens[index + 1]) return result;
 				let type = result.member.types[0].value;
 				if (type === 'void') type = 'Primitive'; // TODO whack hack
@@ -111,14 +111,15 @@ export class ParsedDocFinder {
 				result = undefined;
 			}
 		}
+		return null;
 	}
 
-	async newFinder(routineName: string): Promise<ParsedDocFinder | undefined> {
+	async newFinder(routineName: string): Promise<ParsedDocFinder> {
 
 		if (routineName.startsWith('Record') && routineName !== 'Record') {
 			const tableName = routineName.replace('Record', '');
 			const tableDirectory = await this.resolveFileDefinitionDirectory(tableName.toLowerCase());
-			if (!tableDirectory) return;
+			if (!tableDirectory) return null;
 			const columns: Property[] = (await fs.readdir(tableDirectory)).filter(file => file.endsWith('.COL')).map(col => {
 				const colName = col.replace(`${tableName}-`, '').replace('.COL', '').toLowerCase();
 				const ret: Property = {
@@ -159,12 +160,13 @@ export class ParsedDocFinder {
 				return new ParsedDocFinder(parseText(routineText), newPaths, this.getWorkspaceDocumentText);
 			}
 		}
+		return null;
 	}
 
 	/**
 	 * Search the parsed document and parents for a particular member
 	 */
-	async searchParser(queriedToken: Token): Promise<FinderResult | undefined> {
+	async searchParser(queriedToken: Token): Promise<FinderResult> {
 		const activeMethod = this.findActiveMethod(queriedToken);
 		if (activeMethod) {
 			const variable = this.searchInMethod(activeMethod, queriedToken);
@@ -173,7 +175,7 @@ export class ParsedDocFinder {
 		return this.searchInDocument(queriedToken.value);
 	}
 
-	async searchInDocument(queriedId: string): Promise<FinderResult | undefined> {
+	async searchInDocument(queriedId: string): Promise<FinderResult> {
 		let foundProperty;
 		if (this.paths.activeTable) {
 			foundProperty = this.parsedDocument.properties.find(p => p.id.value.toLowerCase() === queriedId.toLowerCase());
@@ -194,15 +196,16 @@ export class ParsedDocFinder {
 
 		if (this.parsedDocument.extending) {
 			const parentRoutineName = this.parsedDocument.extending.value;
-			if (this.hierarchy.indexOf(parentRoutineName) > -1) return;
+			if (this.hierarchy.indexOf(parentRoutineName) > -1) return null;
 			const parentFinder: ParsedDocFinder | undefined = await this.searchForParent(parentRoutineName);
-			if (!parentFinder) return;
+			if (!parentFinder) return null;
 			return parentFinder.searchInDocument(queriedId);
 		}
 
+		return null;
 	}
 
-	async findAllInDocument(results?: FinderResult[]): Promise<FinderResult[] | undefined> {
+	async findAllInDocument(results?: FinderResult[]): Promise<FinderResult[]> {
 		if (!results) results = [];
 
 		const addToResults = (result: FinderResult) => {
@@ -247,14 +250,14 @@ export class ParsedDocFinder {
 		return '';
 	}
 
-	private async searchForParent(parentRoutineName: string): Promise<ParsedDocFinder | undefined> {
+	private async searchForParent(parentRoutineName: string): Promise<ParsedDocFinder> {
 		const parentFinder = await this.newFinder(parentRoutineName);
-		if (!parentFinder) return;
+		if (!parentFinder) return null;
 		parentFinder.hierarchy = this.hierarchy.concat(this.paths.activeRoutine);
 		return parentFinder;
 	}
 
-	private searchInMethod(activeMethod: Method, queriedToken: Token): Member | undefined {
+	private searchInMethod(activeMethod: Method, queriedToken: Token): Member {
 		for (const variable of activeMethod.declarations.reverse()) {
 			if (queriedToken.position.line < variable.id.position.line) continue;
 			if (queriedToken.value === variable.id.value) return variable;
@@ -262,11 +265,12 @@ export class ParsedDocFinder {
 		for (const parameter of activeMethod.parameters) {
 			if (queriedToken.value === parameter.id.value) return parameter;
 		}
+		return null;
 	}
 
-	private findActiveMethod(queriedToken: Token): Method | undefined {
+	private findActiveMethod(queriedToken: Token): Method {
 		const methods = this.parsedDocument.methods.filter(method => queriedToken.position.line >= method.id.position.line);
-		if (methods) return methods[methods.length - 1];
+		return methods ? methods.at(-1) : null;
 	}
 
 	private async getWorkspaceDocumentText(fsPath: string): Promise<string> {
@@ -292,7 +296,7 @@ export function searchTokens(tokens: Token[], position: Position) {
 	const tokensOnLine = tokens.filter(t => t.position.line === position.line);
 	if (tokensOnLine.length === 0) return undefined;
 	const index = tokensOnLine.findIndex(t => {
-		if (t.isNewLine() || t.isSpace() || t.isTab()) return;
+		if (t.isNewLine() || t.isSpace() || t.isTab()) return null;
 		const start: Position = t.position;
 		const end: Position = { line: t.position.line, character: t.position.character + t.value.length };
 		return isBetween(start, position, end);
@@ -389,22 +393,26 @@ interface Callable {
 
 export function findCallable(tokensOnLine: Token[], index: number) {
 	const callables: Callable[] = [];
+
 	for (let tokenBufferIndex = 0; tokenBufferIndex <= index; tokenBufferIndex++) {
 		const token = tokensOnLine[tokenBufferIndex];
-		if (!tokenBufferIndex && !token.isTab() && !token.isSpace()) return;
+		if (!tokenBufferIndex && !token.isTab() && !token.isSpace()) return null;
 		if (token.isOpenParen()) {
 			callables.push({ tokenBufferIndex: tokenBufferIndex - 1, parameterIndex: 0 });
 		}
 		else if (token.isCloseParen()) {
 			if (callables.length) callables.pop();
-			else return;
+			else return null;
 		}
 		else if (token.isComma() && callables.length) {
 			callables[callables.length - 1].parameterIndex += 1;
 		}
 	}
-	if (!callables.length) return;
-	const activeCallable = callables[callables.length - 1];
+
+	if (!callables.length) return null;
+
+	const activeCallable = callables.at(-1);
+
 	return {
 		callTokens: getCallTokens(tokensOnLine, activeCallable.tokenBufferIndex),
 		parameterIndex: activeCallable.parameterIndex,

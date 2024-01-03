@@ -31,11 +31,13 @@
   },
   "scripts": {
     "clean": "rimraf lib",
+    "precompile": "npm run clean",
+    "compile": "tsc -p tsconfig.json",
     "prebuild": "npm run clean",
-    "build": "tsc --build src",
+    "build": "tsc -p tsconfig.build.json",
     "lint": "tslint -c tslint.json --project .",
-    "watch": "npm run build -- -watch",
-    "pretest": "tsc --build src",
+    "watch": "npm run compile -- -watch",
+    "pretest": "npm run compile",
     "test": "jest"
   },
   "dependencies": {

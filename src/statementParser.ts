@@ -207,9 +207,9 @@ export class StatementParser {
 		return statements;
 	}
 
-	parseStatement(): Statement | undefined {
-		if (!this.activeToken) return;
-		if (!this.activeToken.isAlphanumeric()) return;
+	parseStatement(): Statement {
+		if (!this.activeToken) return null;
+		if (!this.activeToken.isAlphanumeric()) return null;
 
 		const action = this.activeToken;
 		let loadFunction: () => Expression | undefined;
@@ -271,7 +271,7 @@ export class StatementParser {
 				return this.parseTypeStatement();
 
 			default:
-				return;
+				return null;
 		}
 	}
 
@@ -350,12 +350,12 @@ export class StatementParser {
 				});
 			assignments.forEach(expression => {
 				forEachChild(expression, node => {
-					if (!node) return;
+					if (!node) return null;
 					if (node.kind === SyntaxKind.VARIABLE_DECLARATION) {
 						const declaration = node as DeclarationStatement;
 						if (declaration.args) {
 							declaration.args = declaration.args.map((arg: Identifier) => {
-								if (!arg) return;
+								if (!arg) return null;
 								arg.kind = SyntaxKind.TYPE_IDENTIFIER;
 								return arg;
 							});
@@ -393,8 +393,8 @@ export class StatementParser {
 		return rootNode;
 	}
 
-	parseForStatement(): Statement | undefined {
-		if (!this.activeToken) return;
+	parseForStatement(): Statement {
+		if (!this.activeToken) return null;
 		const action = this.activeToken;
 		const forStatement: Statement = { action, kind: SyntaxKind.FOR_STATEMENT, expressions: [] };
 		if (!this.next()) return forStatement; // consume for
@@ -409,8 +409,8 @@ export class StatementParser {
 		return forStatement;
 	}
 
-	parseSetExpression(): Expression | undefined {
-		if (!this.activeToken) return;
+	parseSetExpression(): Expression {
+		if (!this.activeToken) return null;
 		const postCondition: PostCondition | undefined = this.parsePostCondition();
 		const assignment = this.parseAssignment(() => {
 			const setVariables = this.parseSetVariables();
@@ -428,8 +428,9 @@ export class StatementParser {
 		return assignment;
 	}
 
-	parsePostCondition(): PostCondition | undefined {
-		if (!this.activeToken) return;
+	parsePostCondition(): PostCondition {
+		if (!this.activeToken) return null;
+
 		if (this.activeToken.isColon()) {
 			const colon = this.activeToken;
 			const postCondition: PostCondition = { kind: SyntaxKind.POST_CONDITION, colon };
@@ -439,10 +440,13 @@ export class StatementParser {
 			postCondition.condition = condition;
 			return postCondition;
 		}
+
+		return null;
 	}
 
-	parseSetVariables(): Expression | undefined {
-		if (!this.activeToken) return;
+	parseSetVariables(): Expression {
+		if (!this.activeToken) return null;
+
 		if (this.activeToken.isOpenParen()) {
 			this.next(true);
 			const variables = this.loadCommaSeparated(() => this.parseExpression());
@@ -454,13 +458,13 @@ export class StatementParser {
 		}
 	}
 
-	parseExpression(ignoreEquals?: boolean, includeRet?: boolean): Expression | undefined {
+	parseExpression(ignoreEquals?: boolean, includeRet?: boolean): Expression {
 		const postCondition = this.parsePostCondition();
 
 		let rootNode = this.parseValue(undefined, includeRet);
 		if (!rootNode) {
 			if (postCondition) return postCondition;
-			else return;
+			else return null;
 		}
 
 		if (this.activeToken && this.activeToken.isEqualSign() && ignoreEquals) {
@@ -468,7 +472,7 @@ export class StatementParser {
 		}
 
 		rootNode = this.parseOperatorSeparatedValues(rootNode, ignoreEquals);
-		if (!rootNode) return;
+		if (!rootNode) return null;
 
 		rootNode = this.parseColonSeparatedValues(rootNode);
 
@@ -498,7 +502,7 @@ export class StatementParser {
 		while (this.activeToken && getBinaryOperator(this.activeToken.value)) {
 			if (this.activeToken.isEqualSign() && ignoreEquals) break;
 			const operator = this.parseBinaryOperator();
-			if (!operator) return;
+			if (!operator) return null;
 			operator.left = rootNode;
 			operator.right = this.parseValue();
 			rootNode = operator;
@@ -506,8 +510,8 @@ export class StatementParser {
 		return rootNode;
 	}
 
-	parseBinaryOperator(): BinaryOperator | undefined {
-		if (!this.activeToken) return;
+	parseBinaryOperator(): BinaryOperator {
+		if (!this.activeToken) return null;
 		const binaryOperator: BinaryOperator = {
 			kind: SyntaxKind.BINARY_OPERATOR,
 			operator: [this.activeToken],
@@ -546,11 +550,11 @@ export class StatementParser {
 		return leftOperator;
 	}
 
-	parseValue(tree?: BinaryOperator, includeRet?: boolean): Value | Expression | undefined {
+	parseValue(tree?: BinaryOperator, includeRet?: boolean): Value | Expression {
 		let value: Value | Expression | undefined;
 		if (!this.activeToken || this.activeToken.isWhiteSpace()) {
 			if (tree) return tree;
-			else return;
+			else return null;
 		}
 
 		const unaryOperator: Token[] = this.parseUnaryOperator(includeRet);
@@ -563,12 +567,12 @@ export class StatementParser {
 		}
 		if (this.activeToken.type === Type.Alphanumeric) {
 			value = this.parseIdentifier();
-			if (!value) return;
+			if (!value) return null;
 			if (unaryOperator.length) value.unaryOperator = unaryOperator;
 		}
 		else if (this.activeToken.type === Type.DoubleQuotes) {
 			value = this.parseStringLiteral();
-			if (!value) return;
+			if (!value) return null;
 			if (unaryOperator.length) value.unaryOperator = unaryOperator;
 		}
 		else if (this.activeToken.type === Type.Numeric) {
@@ -601,7 +605,7 @@ export class StatementParser {
 	}
 
 	parseIdentifier(): Identifier | undefined {
-		if (!this.activeToken) return;
+		if (!this.activeToken) return null;
 		const id = this.activeToken;
 		if (this.next() && this.activeToken.isOpenParen()) {
 			const openParen = this.activeToken;
@@ -617,17 +621,21 @@ export class StatementParser {
 		return { id, kind: SyntaxKind.IDENTIFIER };
 	}
 
-	parseStringLiteral(): StringLiteral | undefined {
-		if (!this.activeToken) return;
+	parseStringLiteral(): StringLiteral {
+		if (!this.activeToken) return null;
+
 		const openQuote = this.activeToken;
 		this.next();
 		const id = this.activeToken;
-		if (!id || !this.next()) return;
+		if (!id || !this.next()) return null;
+
 		if (this.activeToken.isDoubleQuotes()) {
 			const closeQuote = this.activeToken;
 			this.next(true);
 			return { id, kind: SyntaxKind.STRING_LITERAL, openQuote, closeQuote };
 		}
+
+		return null;
 	}
 
 	parseArgs(): Expression[] {
@@ -665,14 +673,14 @@ export class StatementParser {
 	}
 }
 
-function getBinaryOperator(tokenValue: string): Operator | undefined {
-	return BINARY_OPERATORS.find(o => o.value === tokenValue);
+function getBinaryOperator(tokenValue: string): Operator {
+	return BINARY_OPERATORS.find(o => o.value === tokenValue) || null;
 }
 
-function getUnaryOperator(tokenValue: string, includeRet?: boolean): Operator | undefined {
+function getUnaryOperator(tokenValue: string, includeRet?: boolean): Operator {
 	const operator = UNARY_OPERATORS.find(o => o.value === tokenValue);
-	if (!operator) return;
-	if (operator.value === OPERATOR_VALUE.RET && !includeRet) return;
+	if (!operator) return null;
+	if (operator.value === OPERATOR_VALUE.RET && !includeRet) return null;
 	return operator;
 }
 

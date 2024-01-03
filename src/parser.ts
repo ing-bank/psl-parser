@@ -367,6 +367,7 @@ class Parser {
 			}
 			return '';
 		}
+		return '';
 	}
 
 	private lookForTypeDeclaration(tokenBuffer: Token[]): Declaration[] | undefined {
@@ -489,7 +490,7 @@ class Parser {
 			}
 			else if (token.isNumberSign() && !classDef) {
 				const nextToken = tokenBuffer[i + 1];
-				if (!nextToken) return;
+				if (!nextToken) return null;
 				if (nextToken.value === 'CLASSDEF') {
 					classDef = true;
 					i += 2;
@@ -511,7 +512,7 @@ class Parser {
 				i++;
 			}
 		}
-		return;
+		return null;
 	}
 
 	private checkForPSLPackage(tokenBuffer: Token[]): string {
@@ -529,7 +530,7 @@ class Parser {
 			}
 			else if (token.isNumberSign() && !foundPackageToken) {
 				const nextToken = tokenBuffer[i + 1];
-				if (!nextToken) return;
+				if (!nextToken) return '';
 				if (nextToken.value === 'PACKAGE') {
 					foundPackageToken = true;
 					i += 2;
@@ -553,7 +554,7 @@ class Parser {
 		if (fullPackage !== '') {
 			return fullPackage;
 		}
-		return;
+		return '';
 	}
 
 	private skipToNextDeclaration(identifiers: Token[], tokenIndex: number): number {
@@ -595,7 +596,7 @@ class Parser {
 
 	}
 
-	private lookForPropertyDef(tokenBuffer: Token[]): Property | undefined {
+	private lookForPropertyDef(tokenBuffer: Token[]): Property {
 		let i = 0;
 		// TODO better loop
 		while (i < tokenBuffer.length) {
@@ -639,7 +640,7 @@ class Parser {
 				break;
 			}
 		}
-		return;
+		return null;
 	}
 
 	private findPropertyModifiers(tokens: Token[]) {

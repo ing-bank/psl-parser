@@ -61,10 +61,15 @@ export function getFinderPaths(currentDir: string, activeRoutine?: string): Find
 	const config: ProjectConfig | undefined = activeConfigs.get(currentDir);
 
 	const projectPsl = [];
-	const tables = [];
+	const tables: string[] = [];
 
-	const loadPsl = (base, source) => projectPsl.push(path.join(base, source));
-	const loadFileDefinition = (base, source) => tables.push(path.join(base, source));
+	const loadPsl = (base: string, source: string) => {
+		projectPsl.push(path.join(base, source));
+	}
+
+	const loadFileDefinition = (base: string, source: string) => {
+		tables.push(path.join(base, source));
+	}
 
 	const relativePslSources = config && config.pslSources ? config.pslSources : defaultPslSources;
 	const relativeFileDefinitionSource = config && config.fileDefinitionSources ?
@@ -84,7 +89,6 @@ export function getFinderPaths(currentDir: string, activeRoutine?: string): Find
 			relativePslSources.forEach(source => loadPsl(parent, source));
 			relativeFileDefinitionSource.forEach(source => loadFileDefinition(parent, source));
 		}
-
 	}
 
 	return {

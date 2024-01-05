@@ -11,14 +11,18 @@ interface ProjectConfig {
 	fileDefinitionSources: string[];
 }
 
-export async function setConfig(configPath: string, workspaces: Map<string, string>) {
+export function setConfig(configPath: string, workspaces: Map<string, string>) {
 	const configBaseDir: ConfigBaseDir = path.dirname(configPath);
-	const config: ProjectConfig = await fs.readFile(configPath).then(b => JSON.parse(b.toString()));
+
+	// TODO: (Mischa Reitsma) Loading from a file and not validating that it follows the ProjectConfig interface, worth writing a config parser or use a lib to check against a json schema.
+	const config: ProjectConfig =
+		JSON.parse(fs.readFileSync(configPath).toString()) as ProjectConfig;
+	
 	config.parentProjects = config.parentProjects.map(p => workspaces.get(p)).filter(x => x);
 	activeConfigs.set(configBaseDir, config);
 }
 
-export async function removeConfig(configPath: string) {
+export function removeConfig(configPath: string) {
 	const configBaseDir: ConfigBaseDir = path.dirname(configPath);
 	activeConfigs.delete(configBaseDir);
 }
@@ -38,7 +42,8 @@ export interface FinderPaths {
 	activeTable?: string;
 
 	/**
-	 * Absolute paths to all possible sources for PSL classes, across all projects. Ordered by priority.
+	 * Absolute paths to all possible sources for PSL classes, across all projects.
+	 * Ordered by priority.
 	 */
 	projectPsl: string[];
 
@@ -65,14 +70,16 @@ export function getFinderPaths(currentDir: string, activeRoutine?: string): Find
 
 	const loadPsl = (base: string, source: string) => {
 		projectPsl.push(path.join(base, source));
-	}
+	};
 
 	const loadFileDefinition = (base: string, source: string) => {
 		tables.push(path.join(base, source));
-	}
+	};
 
-	const relativePslSources = config && config.pslSources ? config.pslSources : defaultPslSources;
-	const relativeFileDefinitionSource = config && config.fileDefinitionSources ?
+	const relativePslSources = (config && config.pslSources)
+		? config.pslSources : defaultPslSources;
+
+		const relativeFileDefinitionSource = config && config.fileDefinitionSources ?
 		config.fileDefinitionSources : defaultFileDefinitionSources;
 
 	const corePsl = path.join(currentDir, '.vscode/pslcls/');
@@ -87,7 +94,9 @@ export function getFinderPaths(currentDir: string, activeRoutine?: string): Find
 	if (config && config.parentProjects) {
 		for (const parent of config.parentProjects) {
 			relativePslSources.forEach(source => loadPsl(parent, source));
-			relativeFileDefinitionSource.forEach(source => loadFileDefinition(parent, source));
+			relativeFileDefinitionSource.forEach(
+				source => loadFileDefinition(parent, source)
+			);
 		}
 	}
 

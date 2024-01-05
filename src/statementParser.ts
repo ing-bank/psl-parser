@@ -1,3 +1,15 @@
+/* eslint-disable no-case-declarations */
+/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
+/*
+Notes from Mischa Reitsma on skipped rules:
+- The no case declarations rule can be fixed by making sure the code in the cases go to dedicated
+  functions. It would make the code way more maintainable and readable.
+- The unsafe enum comparison needs to be fixed later. There is some mismatch in using string values
+  or enum values it seems. The tokenize values are not linked to an enum? But a lot of switch/case
+  and if/else statements actually compare the values to enum values. A quick fix would be to add
+  a `.valueOf()` everywhere where an enum is used, but that is rather hacky and beats the purpose of
+  enums. Better to solve it properly.
+*/
 import {getTokens, Token, Type} from './tokenizer';
 
 export enum SyntaxKind {
@@ -276,7 +288,7 @@ export class StatementParser {
 	}
 
 	parseTypeStatement(): Statement {
-		const action = this.activeToken as Token;
+		const action = this.activeToken;
 		this.next(true);
 		let staticToken: Token | undefined;
 		let newToken: Token | undefined;
@@ -319,7 +331,10 @@ export class StatementParser {
 				return [];
 			}
 
-			const type: TypeIdentifier = { id: this.activeToken, kind: SyntaxKind.TYPE_IDENTIFIER };
+			const type: TypeIdentifier = {
+				id: this.activeToken,
+				kind: SyntaxKind.TYPE_IDENTIFIER
+			};
 			if (!this.next(true) || staticToken) {
 				const declaration: DeclarationStatement = {
 					id: undefined,
@@ -335,7 +350,8 @@ export class StatementParser {
 			const assignments =
 				this.loadCommaSeparated(() => {
 					return this.parseAssignment(() => {
-						const variable = this.parseValue() as Identifier; // why not parseIdentifier
+						// why not parseIdentifier
+						const variable = this.parseValue() as Identifier;
 						return {
 							args: variable.args,
 							id: variable.id,
@@ -348,22 +364,22 @@ export class StatementParser {
 						};
 					});
 				});
-			assignments.forEach(expression => {
-				forEachChild(expression, node => {
-					if (!node) return null;
-					if (node.kind === SyntaxKind.VARIABLE_DECLARATION) {
-						const declaration = node as DeclarationStatement;
-						if (declaration.args) {
-							declaration.args = declaration.args.map((arg: Identifier) => {
-								if (!arg) return null;
-								arg.kind = SyntaxKind.TYPE_IDENTIFIER;
-								return arg;
-							});
-						}
+			assignments.forEach(expression => { forEachChild(expression, node => {
+				if (!node) return null;
+				if (node.kind === SyntaxKind.VARIABLE_DECLARATION) {
+					const declaration = node as DeclarationStatement;
+					if (declaration.args) {
+						declaration.args = declaration.args
+						.map((arg: Identifier) => {
+							if (!arg) return null;
+							arg.kind = SyntaxKind.TYPE_IDENTIFIER;
+							return arg;
+						});
 					}
-					return true;
-				});
-			});
+				}
+				return true;
+			});});
+
 			return assignments;
 		};
 
@@ -379,7 +395,7 @@ export class StatementParser {
 		};
 	}
 
-	parseAssignment(getLeft: () => Expression | MultiSet | DeclarationStatement | undefined): Expression | undefined {
+	parseAssignment(getLeft: () => Expression | MultiSet | DeclarationStatement): Expression {
 		const left = getLeft();
 		let rootNode = left;
 		if (this.activeToken && this.activeToken.isEqualSign()) {
@@ -396,7 +412,11 @@ export class StatementParser {
 	parseForStatement(): Statement {
 		if (!this.activeToken) return null;
 		const action = this.activeToken;
-		const forStatement: Statement = { action, kind: SyntaxKind.FOR_STATEMENT, expressions: [] };
+		const forStatement: Statement = {
+			action,
+			kind: SyntaxKind.FOR_STATEMENT,
+			expressions: []
+		};
 		if (!this.next()) return forStatement; // consume for
 		if (!this.next()) return forStatement; // consume first space
 		const spaceOrExpression = this.activeToken;
@@ -433,7 +453,10 @@ export class StatementParser {
 
 		if (this.activeToken.isColon()) {
 			const colon = this.activeToken;
-			const postCondition: PostCondition = { kind: SyntaxKind.POST_CONDITION, colon };
+			const postCondition: PostCondition = {
+				kind: SyntaxKind.POST_CONDITION,
+				colon
+			};
 			this.next(true);
 			const condition = this.parseExpression();
 			if (!condition) return postCondition;
@@ -576,7 +599,10 @@ export class StatementParser {
 			if (unaryOperator.length) value.unaryOperator = unaryOperator;
 		}
 		else if (this.activeToken.type === Type.Numeric) {
-			value = { id: this.activeToken, kind: SyntaxKind.NUMERIC_LITERAL } as NumericLiteral;
+			value = {
+				id: this.activeToken,
+				kind: SyntaxKind.NUMERIC_LITERAL
+			} as NumericLiteral;
 			if (unaryOperator.length) value.unaryOperator = unaryOperator;
 			this.next(true);
 		}
@@ -589,7 +615,12 @@ export class StatementParser {
 			tree.right = value;
 			value = tree;
 		}
-		if (this.activeToken && (this.activeToken.type === Type.Period || this.activeToken.type === Type.Caret)) {
+		if (
+			this.activeToken && (
+				this.activeToken.type === Type.Period ||
+				this.activeToken.type === Type.Caret
+			)
+		) {
 			const operator: BinaryOperator = {
 				kind: SyntaxKind.BINARY_OPERATOR,
 				left: value,
@@ -614,7 +645,13 @@ export class StatementParser {
 				if (this.activeToken.isCloseParen()) {
 					const closeParen = this.activeToken;
 					this.next();
-					return { id, kind: SyntaxKind.IDENTIFIER, args, openParen, closeParen } as Identifier;
+					return {
+						id,
+						kind: SyntaxKind.IDENTIFIER,
+						args,
+						openParen,
+						closeParen
+					} as Identifier;
 				}
 			}
 		}
@@ -666,9 +703,13 @@ export class StatementParser {
 	private next(skipSpaceOrTab?: boolean): boolean {
 		if (this.activeToken) this.previousToken = this.activeToken;
 		do {
-			this.activeToken = this.tokenizer.next().value;
+			this.activeToken = this.tokenizer.next().value as Token;
 			if (this.activeToken) this.tokens.push(this.activeToken);
-		} while (skipSpaceOrTab && this.activeToken && (this.activeToken.isSpace() || this.activeToken.isTab()));
+		} while (
+			skipSpaceOrTab &&
+			this.activeToken &&
+			(this.activeToken.isSpace() || this.activeToken.isTab())
+		);
 		return this.activeToken !== undefined;
 	}
 }
@@ -732,8 +773,9 @@ export function forEachChild(node: Node, f: (n: Node) => boolean) {
 			if (postCondition.expression) {
 				const expression = postCondition.expression;
 				if (Array.isArray(expression)) {
+					// TODO: (Mischa Reitsma) This should be fixed in the types. Seems like the MultiSet is part of the Expression union, which contains expressions, so this is either a bug or some code is ignoring the types or interfaces
 					expression.forEach(n => {
-						forEachChild(n, f);
+						forEachChild(n as Expression, f);
 					});
 				}
 				else if (expression) {

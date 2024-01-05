@@ -48,7 +48,8 @@ export interface Member {
 export interface Method extends Member {
 
 	/**
-	 * The Token of the closing parenthesis after the declaration of all the Method's parameters.
+	 * The Token of the closing parenthesis after the declaration of all the Method's
+	 * parameters.
 	 */
 	closeParen: Token;
 
@@ -306,7 +307,9 @@ class Parser {
 				}
 				const typeDec = this.lookForTypeDeclaration(tokenBuffer);
 				if (typeDec.length > 0) {
-					const activeDeclarations = this.activeMethod ? this.activeMethod.declarations : this.declarations;
+					const activeDeclarations = this.activeMethod
+						? this.activeMethod.declarations
+						: this.declarations;
 					for (const dec of typeDec) activeDeclarations.push(dec);
 					continue;
 				}
@@ -314,18 +317,36 @@ class Parser {
 				if (extending) this.extending = extending;
 				const pslPackage = this.checkForPSLPackage(tokenBuffer);
 				if (pslPackage) this.pslPackage = pslPackage;
-				if (this.activeMethod && this.activeMethod.batch && this.activeMethod.id.value === 'REVHIST') {
+				if (
+					this.activeMethod &&
+					this.activeMethod.batch &&
+					this.activeMethod.id.value === 'REVHIST'
+				)
 					continue;
-				}
+
 				const statements = this.parseStatementsOnLine(tokenBuffer);
-				if (statements && this.activeMethod) this.activeMethod.statements = this.activeMethod.statements.concat(statements);
-				if (this.activeProperty && this.activeProperty.id.position.line + 1 === lineNumber) {
-					const documentation = this.checkForDocumentation(tokenBuffer);
-					if (documentation) this.activeProperty.documentation = documentation;
+				if (statements && this.activeMethod) {
+					this.activeMethod.statements =
+						this.activeMethod.statements.concat(statements);
 				}
-				else if (this.activeMethod && getLineAfter(this.activeMethod) === lineNumber) {
-					const documentation = this.checkForDocumentation(tokenBuffer);
-					if (documentation) this.activeMethod.documentation = documentation;
+
+				if (
+					this.activeProperty &&
+					this.activeProperty.id.position.line + 1 === lineNumber
+				) {
+					const documentation =
+						this.checkForDocumentation(tokenBuffer);
+					if (documentation)
+						this.activeProperty.documentation = documentation;
+				}
+				else if (
+					this.activeMethod &&
+					getLineAfter(this.activeMethod) === lineNumber
+				) {
+					const documentation =
+						this.checkForDocumentation(tokenBuffer);
+					if (documentation)
+						this.activeMethod.documentation = documentation;
 				}
 			}
 			else if (!this.activeToken.isNewLine()) {
@@ -344,7 +365,7 @@ class Parser {
 	}
 
 	private next(): boolean {
-		this.activeToken = this.tokenizer.next().value;
+		this.activeToken = this.tokenizer.next().value as Token;
 		if (this.activeToken) {
 			this.tokens.push(this.activeToken);
 			if (this.activeToken.isLineComment() || this.activeToken.isBlockComment()) {
@@ -362,7 +383,11 @@ class Parser {
 				i++;
 				continue;
 			}
-			if (token.isBlockCommentInit() && tokenBuffer[i + 1] && tokenBuffer[i + 1].isBlockComment()) {
+			if (
+				token.isBlockCommentInit() &&
+				tokenBuffer[i + 1] &&
+				tokenBuffer[i + 1].isBlockComment()
+			) {
 				return tokenBuffer[i + 1].value;
 			}
 			return '';
@@ -392,7 +417,11 @@ class Parser {
 					const loadToken = tokenBuffer[j];
 					if (loadToken.isSpace() || loadToken.isTab()) continue;
 					// if (loadToken.isEqualSign()) break;
-					tokens.push(new Token(Type.Alphanumeric, 'Error', { character: 0, line: 0 }));
+					tokens.push(new Token(
+						Type.Alphanumeric,
+						'Error',
+						{ character: 0, line: 0 }
+					));
 					tokens.push(loadToken);
 					break;
 				}
@@ -432,7 +461,11 @@ class Parser {
 			}
 			else if (token.isEqualSign()) {
 				tokenIndex = this.skipToNextDeclaration(tokens, tokenIndex);
-				if (id && type) declarations.push({ types: [type], id, memberClass, modifiers });
+				if (id && type) {
+					declarations.push(
+						{ types: [type], id, memberClass, modifiers }
+					);
+				}
 				id = undefined;
 			}
 			else if (token.isOpenParen()) {
@@ -449,7 +482,14 @@ class Parser {
 						continue;
 					}
 					else if (arrayTypeToken.isCloseParen()) {
-						if (type) declarations.push({ id: myIdentifier, types: [type].concat(types), memberClass, modifiers });
+						if (type) {
+							declarations.push({
+								id: myIdentifier,
+								types: [type].concat(types),
+								memberClass,
+								modifiers
+							});
+						}
 						id = undefined;
 						break;
 					}
@@ -458,7 +498,11 @@ class Parser {
 			// Cheating!!
 			// else if (token.isPercentSign()) continue;
 			else if (token.isComma()) {
-				if (id && type) declarations.push({ types: [type], id, memberClass, modifiers });
+				if (id && type) {
+					declarations.push(
+						{ types: [type], id, memberClass, modifiers }
+					);
+				}
 				id = undefined;
 				continue;
 			}
@@ -467,7 +511,11 @@ class Parser {
 			else if (token.isBlockCommentInit()) continue;
 			else if (token.isBlockCommentTerm()) continue;
 			else if (token.isNewLine()) {
-				if (id && type) declarations.push({ types: [type], id, memberClass, modifiers });
+				if (id && type) {
+					declarations.push(
+						{ types: [type], id, memberClass, modifiers }
+					);
+				}
 				id = undefined;
 				break;
 			}
@@ -615,7 +663,9 @@ class Parser {
 					},
 					);
 					const classTypes: Token[] = [];
-					const classIndex = tokens.findIndex(t => t.value === 'class');
+					const classIndex = tokens.findIndex(
+						t => t.value === 'class'
+					);
 					if (
 						tokens[classIndex + 1]
 						&& tokens[classIndex + 1].value === '='
@@ -627,7 +677,8 @@ class Parser {
 					return {
 						id: tokens[0],
 						memberClass: MemberClass.property,
-						modifiers: this.findPropertyModifiers(tokens.slice(1)),
+						modifiers: this.findPropertyModifiers(
+							tokens.slice(1)),
 						types: classTypes,
 					};
 
@@ -645,7 +696,11 @@ class Parser {
 
 	private findPropertyModifiers(tokens: Token[]) {
 		return tokens.filter(t => {
-			return t.value === 'private' || t.value === 'literal' || t.value === 'public';
+			return (
+				t.value === 'private' ||
+				t.value === 'literal' ||
+				t.value === 'public'
+			);
 		});
 	}
 
@@ -662,7 +717,10 @@ class Parser {
 				method.parameters = processed;
 				break;
 			}
-			else if (this.activeToken.isAlphanumeric() || this.activeToken.isNumeric()) {
+			else if (
+				this.activeToken.isAlphanumeric() ||
+				this.activeToken.isNumeric()
+			) {
 				if (batchLabel) {
 					method.modifiers.push(this.activeToken);
 					method.batch = true;
@@ -706,7 +764,10 @@ class Parser {
 
 	private finalizeMethod(method: _Method) {
 		for (const keyword of NON_METHOD_KEYWORDS) {
-			const index = method.modifiers.map(i => i.value.toLowerCase()).indexOf(keyword.toLowerCase());
+			const index = method.modifiers
+				.map(i => i.value.toLowerCase())
+				.indexOf(keyword.toLowerCase());
+
 			if (index > -1 && index <= method.modifiers.length - 1) {
 				method.modifiers = [method.modifiers[0]];
 				method.parameters = [];
@@ -732,7 +793,13 @@ class Parser {
 		let param: _Parameter | undefined;
 		let open = false;
 		while (this.next()) {
-			if (this.activeToken.isTab() || this.activeToken.isSpace() || this.activeToken.isNewLine()) continue;
+			if (
+				this.activeToken.isTab() ||
+				this.activeToken.isSpace() ||
+				this.activeToken.isNewLine()
+			) {
+				continue;
+			}
 			else if (this.activeToken.isOpenParen()) {
 				open = true;
 				if (!param) return undefined;
@@ -798,7 +865,7 @@ class Parser {
 		return args;
 	}
 
-	private processObjectArgs(): Token[] | undefined {
+	private processObjectArgs(): Token[] {
 		const types: Token[] = [];
 		let found = false;
 		while (this.next()) {
@@ -813,7 +880,7 @@ class Parser {
 					types.push(this.activeToken);
 					found = true;
 				}
-				else return undefined;
+				else return null;
 			}
 			else if (this.activeToken.isComma()) {
 				if (!found) {
@@ -826,7 +893,7 @@ class Parser {
 				continue;
 			}
 		}
-		return undefined;
+		return null;
 	}
 
 	private parseStatementsOnLine(tokenBuffer: Token[]): Statement[] {

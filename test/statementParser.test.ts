@@ -1,8 +1,8 @@
 import {
-	BinaryOperator, DeclarationStatement, Expression, Identifier, MultiSet, NumericLiteral,
-	PostCondition, Statement, StatementParser, StringLiteral, SyntaxKind, TypeIdentifier, Value,
+	BinaryOperator, DeclarationStatement, Identifier, MultiSet, NumericLiteral,
+	PostCondition, StatementParser, StringLiteral, SyntaxKind, Value,
 } from '../src';
-import { getTokens, Token } from '../src/tokenizer';
+import { getTokens } from '../src/tokenizer';
 
 function parse(text: string) {
 	return new StatementParser(getTokens(text));
@@ -181,9 +181,9 @@ describe('recursive tests', () => {
 	test('parse do statement', () => {
 		const parser = parse('do x(y.z)');
 
-		const statement = parser.parseStatement() as Statement;
+		const statement = parser.parseStatement();
 		const x = statement.expressions[0] as Identifier;
-		const args = x.args as Expression[];
+		const args = x.args;
 		const dot = args[0] as BinaryOperator;
 		const y = dot.left as Identifier;
 		const z = dot.right as Identifier;
@@ -196,7 +196,7 @@ describe('recursive tests', () => {
 	test('parse set statement', () => {
 		const parser = parse('set x = y');
 
-		const statement = parser.parseStatement() as Statement;
+		const statement = parser.parseStatement();
 		const equal = statement.expressions[0] as BinaryOperator;
 		const x = equal.left as Identifier;
 		const y = equal.right as Identifier;
@@ -207,7 +207,7 @@ describe('recursive tests', () => {
 	test('parse set statement2', () => {
 		const parser = parse('set x = y');
 
-		const statement = parser.parseStatement() as Statement;
+		const statement = parser.parseStatement();
 		const equal = statement.expressions[0] as BinaryOperator;
 		const x = equal.left as Identifier;
 		const y = equal.right as Identifier;
@@ -218,7 +218,7 @@ describe('recursive tests', () => {
 	test('parse set prop statement', () => {
 		const parser = parse('set x.y = z');
 
-		const statement = parser.parseStatement() as Statement;
+		const statement = parser.parseStatement();
 		const equal = statement.expressions[0] as BinaryOperator;
 		const dot = equal.left as BinaryOperator;
 		const x = dot.left as Identifier;
@@ -232,7 +232,7 @@ describe('recursive tests', () => {
 	test('parse multi set', () => {
 		const parser = parse('set a = b, x = y');
 
-		const setStatement = parser.parseStatement() as Statement;
+		const setStatement = parser.parseStatement();
 		const aEqual = setStatement.expressions[0] as BinaryOperator;
 		const a = aEqual.left as Identifier;
 		const b = aEqual.right as Identifier;
@@ -253,14 +253,14 @@ describe('recursive tests', () => {
 	test('parse set to complex expression', () => {
 		const parser = parse('set a = x(y,z)');
 
-		const statement = parser.parseStatement() as Statement;
+		const statement = parser.parseStatement();
 		const equal1 = statement.expressions[0] as BinaryOperator;
 
 		const a = equal1.left as Identifier;
 		const x = equal1.right as Identifier;
 		const xArgs = x.args as Identifier[];
-		const y = xArgs[0] as Identifier;
-		const z = xArgs[1] as Identifier;
+		const y = xArgs[0];
+		const z = xArgs[1];
 
 		expect(statement.action.value).toBe('set');
 		expect(a.id.value).toBe('a');
@@ -272,7 +272,7 @@ describe('recursive tests', () => {
 	test('multi variable set', () => {
 		const parser = parse('set (a,b) = c');
 
-		const statement = parser.parseStatement() as Statement;
+		const statement = parser.parseStatement();
 		const equal = statement.expressions[0] as BinaryOperator;
 		const variables = equal.left as MultiSet;
 		const a = variables.variables[0] as Identifier;
@@ -288,7 +288,7 @@ describe('recursive tests', () => {
 	test('multi variable set', () => {
 		const parser = parse('set (a.x,b.y) = c, i = j');
 
-		const statement = parser.parseStatement() as Statement;
+		const statement = parser.parseStatement();
 		const equal1 = statement.expressions[0] as BinaryOperator;
 		const variables = equal1.left as MultiSet;
 		const dot1 = variables.variables[0] as BinaryOperator;
@@ -385,11 +385,11 @@ describe('recursive tests', () => {
 	});
 	test('test unary operator', () => {
 		const parser = parse('set x = $$LABEL^PROC');
-		const statement = parser.parseStatement() as Statement;
+		const statement = parser.parseStatement();
 		const equal = statement.expressions[0] as BinaryOperator;
 		const carrot = equal.right as BinaryOperator;
 		const label = carrot.left as Identifier;
-		const unaryOperator = label.unaryOperator as Token[];
+		const unaryOperator = label.unaryOperator;
 		const proc = carrot.right as Identifier;
 
 		expect(equal.operator[0].value).toBe('=');
@@ -400,16 +400,18 @@ describe('recursive tests', () => {
 	});
 	test('test unary and operator', () => {
 		const parser = parse('if x and not y');
-		const statement = parser.parseStatement() as Statement;
+		const statement = parser.parseStatement();
 		const and = statement.expressions[0] as BinaryOperator;
 		const y = and.right as Identifier;
-		const unaryOperator = y.unaryOperator as Token[];
+		const unaryOperator = y.unaryOperator;
 		expect(and.operator.map(o => o.value).join(' ')).toBe('and');
 		expect(y.id.value).toBe('y');
 		expect(unaryOperator.map(o => o.value).join(' ')).toBe('not');
 	});
 	test('many statements', () => {
-		const parser = parse('if x.isNotNull() and (y <= (z+3)) set a = "19900415".toDate() do b.func()');
+		const parser = parse(
+			'if x.isNotNull() and (y <= (z+3)) set a = "19900415".toDate() do b.func()'
+		);
 
 		const statements = parser.parseLine();
 		const ifStatement = statements[0];
@@ -456,13 +458,13 @@ describe('recursive tests', () => {
 	});
 	test('catch with colon', () => {
 		const parser = parse('catch a@"b":c = d');
-		const catchStatement = parser.parseStatement() as Statement;
+		const catchStatement = parser.parseStatement();
 		const colon = catchStatement.expressions[0] as BinaryOperator;
 		expect(colon.operator.map(o => o.value).join('')).toBe(':');
 	});
 	test('set with colon', () => {
 		const parser = parse('set:x=ER (x,y)=1');
-		const setStatement = parser.parseStatement() as Statement;
+		const setStatement = parser.parseStatement();
 		const postCondition = setStatement.expressions[0] as PostCondition;
 		const postEqual = postCondition.condition as BinaryOperator;
 		const assignEqual = postCondition.expression as BinaryOperator;
@@ -473,7 +475,7 @@ describe('recursive tests', () => {
 	});
 	test('set with colon and assignment', () => {
 		const parser = parse('set:EVENT.isNull() EVENT = "No "');
-		const setStatement = parser.parseStatement() as Statement;
+		const setStatement = parser.parseStatement();
 		const postCondition = setStatement.expressions[0] as PostCondition;
 		const postDot = postCondition.condition as BinaryOperator;
 		const postEvent = postDot.left as Identifier;
@@ -487,8 +489,8 @@ describe('recursive tests', () => {
 		expect(assignEvent.id.value).toBe('EVENT');
 	});
 	test('set with colon not contain and assignment', () => {
-		const parser = parse(`set:VAL '[ "." VAL = VAL_ "."`);
-		const setStatement = parser.parseStatement() as Statement;
+		const parser = parse('set:VAL \'[ "." VAL = VAL_ "."');
+		const setStatement = parser.parseStatement();
 		const postCondition = setStatement.expressions[0] as PostCondition;
 		const notContain = postCondition.condition as BinaryOperator;
 		const val1 = notContain.left as Identifier;
@@ -498,7 +500,7 @@ describe('recursive tests', () => {
 		const underscore = assignment.right as BinaryOperator;
 		const val3 = underscore.left as Identifier;
 		const dot2 = underscore.right as StringLiteral;
-		expect(notContain.operator.map(o => o.value).join('')).toBe(`'[`);
+		expect(notContain.operator.map(o => o.value).join('')).toBe('\'[');
 		expect(val1.id.value).toBe('VAL');
 		expect(val2.id.value).toBe('VAL');
 		expect(val3.id.value).toBe('VAL');
@@ -507,7 +509,7 @@ describe('recursive tests', () => {
 	});
 	test('do with colon', () => {
 		const parser = parse('do:x=ER logErr^LOG(msg)');
-		const setStatement = parser.parseStatement() as Statement;
+		const setStatement = parser.parseStatement();
 		const postCondition = setStatement.expressions[0] as PostCondition;
 		const postEqual = postCondition.condition as BinaryOperator;
 		const carrot = postCondition.expression as BinaryOperator;
@@ -518,17 +520,17 @@ describe('recursive tests', () => {
 	});
 	test('$select', () => {
 		const parser = parse('set x = $select(ER:"error",true:"ok")');
-		const setStatement = parser.parseStatement() as Statement;
+		const setStatement = parser.parseStatement();
 		const equal = setStatement.expressions[0] as BinaryOperator;
 		const select = equal.right as Identifier;
-		const args = select.args as Expression[];
+		const args = select.args;
 		const arg1 = args[0] as BinaryOperator;
 		expect(equal.operator.map(o => o.value).join('')).toBe('=');
 		expect(arg1.operator.map(o => o.value).join('')).toBe(':');
 	});
 	test('for loop', () => {
 		const parser = parse('for i=1:1:100');
-		const setStatement = parser.parseStatement() as Statement;
+		const setStatement = parser.parseStatement();
 		const outsideColon = setStatement.expressions[0] as BinaryOperator;
 		const oneHundred = outsideColon.right as NumericLiteral;
 		const insideColon = outsideColon.left as BinaryOperator;
@@ -556,14 +558,16 @@ describe('recursive tests', () => {
 	});
 	test('empty arg', () => {
 		const parser = parse('do Runtime.start("CS",,ALERT)');
-		const doStatement = parser.parseStatement() as Statement;
+		const doStatement = parser.parseStatement();
 		const dot = doStatement.expressions[0] as BinaryOperator;
 		const start = dot.right as Identifier;
 		const args = start.args as Identifier[];
 		expect(args.length).toBe(3);
 	});
 	test('for order', () => {
-		const parser = parse('for  set seq=array(seq).order() quit:seq.isNull()  do set(array(seq))');
+		const parser = parse(
+			'for  set seq=array(seq).order() quit:seq.isNull()  do set(array(seq))'
+		);
 		const statements = parser.parseLine();
 		const setStatement = statements[1];
 		const equal = setStatement.expressions[0] as BinaryOperator;
@@ -584,9 +588,9 @@ describe('recursive tests', () => {
 		const statements = parser.parseLine();
 		const doStatement = statements[0];
 		const f = doStatement.expressions[0] as Identifier;
-		const args = f.args as Expression[];
+		const args = f.args;
 		const x = args[0] as Identifier;
-		const unaryOperator = x.unaryOperator as Token[];
+		const unaryOperator = x.unaryOperator;
 		expect(f.id.value).toBe('f');
 		expect(x.id.value).toBe('x');
 		expect(unaryOperator[0].value).toBe('ret');
@@ -755,20 +759,20 @@ describe('recursive tests', () => {
 	});
 	test('type statement', () => {
 		const parser = parse('type String x');
-		const statement = parser.parseTypeStatement() as Statement;
+		const statement = parser.parseTypeStatement();
 		const declaration = statement.expressions[0] as DeclarationStatement;
-		const typeIdentifier = declaration.type as TypeIdentifier;
+		const typeIdentifier = declaration.type;
 		expect(typeIdentifier.id.value).toBe('String');
 		expect(declaration.id.value).toBe('x');
 		expect(declaration.args).toBeUndefined();
 	});
 	test('type statement with arg', () => {
 		const parser = parse('type void x(Number)');
-		const statement = parser.parseTypeStatement() as Statement;
+		const statement = parser.parseTypeStatement();
 		const declaration = statement.expressions[0] as DeclarationStatement;
 		const args = declaration.args as Identifier[];
-		const arrayTypeNumber = args[0] as Identifier;
-		const typeIdentifier = declaration.type as TypeIdentifier;
+		const arrayTypeNumber = args[0];
+		const typeIdentifier = declaration.type;
 		expect(typeIdentifier.id.value).toBe('void');
 		expect(declaration.id.value).toBe('x');
 		expect(args.length).toBe(1);
@@ -776,12 +780,12 @@ describe('recursive tests', () => {
 	});
 	test('type statement with 2 arg', () => {
 		const parser = parse('type void x(Number, String)');
-		const statement = parser.parseTypeStatement() as Statement;
+		const statement = parser.parseTypeStatement();
 		const declaration = statement.expressions[0] as DeclarationStatement;
 		const args = declaration.args as Identifier[];
-		const arrayTypeNumber = args[0] as Identifier;
-		const arrayTypeString = args[1] as Identifier;
-		const typeIdentifier = declaration.type as TypeIdentifier;
+		const arrayTypeNumber = args[0];
+		const arrayTypeString = args[1];
+		const typeIdentifier = declaration.type;
 		expect(typeIdentifier.id.value).toBe('void');
 		expect(declaration.id.value).toBe('x');
 		expect(args.length).toBe(2);
@@ -790,31 +794,31 @@ describe('recursive tests', () => {
 	});
 	test('type statement with no arg', () => {
 		const parser = parse('type void x()');
-		const statement = parser.parseTypeStatement() as Statement;
+		const statement = parser.parseTypeStatement();
 		const declaration = statement.expressions[0] as DeclarationStatement;
 		const args = declaration.args as Identifier[];
-		const typeIdentifier = declaration.type as TypeIdentifier;
+		const typeIdentifier = declaration.type;
 		expect(typeIdentifier.id.value).toBe('void');
 		expect(declaration.id.value).toBe('x');
 		expect(args.length).toBe(0);
 	});
 	test('type statement with 2 empty args', () => {
 		const parser = parse('type void x(,)');
-		const statement = parser.parseTypeStatement() as Statement;
+		const statement = parser.parseTypeStatement();
 		const declaration = statement.expressions[0] as DeclarationStatement;
 		const args = declaration.args as Identifier[];
-		const typeIdentifier = declaration.type as TypeIdentifier;
+		const typeIdentifier = declaration.type;
 		expect(typeIdentifier.id.value).toBe('void');
 		expect(declaration.id.value).toBe('x');
 		expect(args.length).toBe(2);
 	});
 	test('type statement with assignment', () => {
 		const parser = parse('type String x = "something"');
-		const statement = parser.parseTypeStatement() as Statement;
+		const statement = parser.parseTypeStatement();
 		const assignment = statement.expressions[0] as BinaryOperator;
 		const declaration = assignment.left as DeclarationStatement;
 		const something = assignment.right as StringLiteral;
-		const typeIdentifier = declaration.type as TypeIdentifier;
+		const typeIdentifier = declaration.type;
 		expect(typeIdentifier.id.value).toBe('String');
 		expect(declaration.id.value).toBe('x');
 		expect(declaration.args).toBeUndefined();
@@ -822,11 +826,11 @@ describe('recursive tests', () => {
 	});
 	test('type statement with keywords', () => {
 		const parser = parse('type public new String x');
-		const statement = parser.parseTypeStatement() as Statement;
+		const statement = parser.parseTypeStatement();
 		const declaration = statement.expressions[0] as DeclarationStatement;
-		const publicToken = declaration.publicToken as Token;
-		const newToken = declaration.newToken as Token;
-		const typeIdentifier = declaration.type as TypeIdentifier;
+		const publicToken = declaration.publicToken;
+		const newToken = declaration.newToken;
+		const typeIdentifier = declaration.type;
 		expect(typeIdentifier.id.value).toBe('String');
 		expect(publicToken.value).toBe('public');
 		expect(newToken.value).toBe('new');
@@ -835,7 +839,7 @@ describe('recursive tests', () => {
 	});
 	test('complex multi line set', () => {
 		const parser = parse('type Number x = 1, y = 2');
-		const statement = parser.parseStatement() as Statement;
+		const statement = parser.parseStatement();
 		const xAssign = statement.expressions[0] as BinaryOperator;
 		const yAssign = statement.expressions[1] as BinaryOperator;
 		expect(statement.expressions.length).toBe(2);
@@ -844,29 +848,29 @@ describe('recursive tests', () => {
 	});
 	test('static declaration', () => {
 		const parser = parse('type static ZTest');
-		const statement = parser.parseStatement() as Statement;
+		const statement = parser.parseStatement();
 		const declaration = statement.expressions[0] as DeclarationStatement;
 		expect(declaration.type.id.value).toBe('ZTest');
 		expect(declaration.staticToken.value).toBe('static');
 	});
 	test('only type', () => {
 		const parser = parse('type');
-		const statement = parser.parseStatement() as Statement;
+		const statement = parser.parseStatement();
 		expect(statement.kind).toBe(SyntaxKind.TYPE_STATEMENT);
 		expect(statement.expressions.length).toBe(0);
 	});
 	test('type String', () => {
 		const parser = parse('type String');
-		const statement = parser.parseStatement() as Statement;
+		const statement = parser.parseStatement();
 		const declaration = statement.expressions[0] as DeclarationStatement;
-		const stringType = declaration.type as TypeIdentifier;
+		const stringType = declaration.type;
 		expect(statement.kind).toBe(SyntaxKind.TYPE_STATEMENT);
 		expect(stringType.id.value).toBe('String');
 		expect(declaration.id).toBeUndefined();
 	});
 	test('type static', () => {
 		const parser = parse('type static');
-		const statement = parser.parseStatement() as Statement;
+		const statement = parser.parseStatement();
 		const declaration = statement.expressions[0] as DeclarationStatement;
 		expect(declaration.type).toBeUndefined();
 		expect(declaration.staticToken.value).toBe('static');

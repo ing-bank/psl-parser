@@ -146,7 +146,10 @@ describe('ParsedDocFinder', () => {
 
 	test('Find dummy in child', async () => {
 		const paths = getPaths(childFilePath);
-		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(parsedChild, paths);
+		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(
+			parsedChild,
+			paths
+		);
 		const result = await searchParser(finder, 'dummy', { character: 0, line: 0 });
 		expect(result.member.memberClass).toBe(MemberClass.property);
 		expect(result.member.id.value).toBe('dummy');
@@ -155,7 +158,10 @@ describe('ParsedDocFinder', () => {
 
 	test('Find property in child', async () => {
 		const paths = getPaths(childFilePath);
-		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(parsedChild, paths);
+		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(
+			parsedChild,
+			paths
+		);
 		const result = await searchParser(finder, 'propInChild', { character: 0, line: 0 });
 		expect(result.member.memberClass).toBe(MemberClass.property);
 		expect(result.member.id.value).toBe('propInChild');
@@ -164,8 +170,15 @@ describe('ParsedDocFinder', () => {
 
 	test('Find method in child', async () => {
 		const paths = getPaths(childFilePath);
-		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(parsedChild, paths);
-		const result = await searchParser(finder, 'methodInChild', { character: 0, line: 0 });
+		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(
+			parsedChild,
+			paths
+		);
+		const result = await searchParser(
+			finder,
+			'methodInChild',
+			{ character: 0, line: 0 }
+		);
 		expect(result.member.memberClass).toBe(MemberClass.method);
 		expect(result.member.id.value).toBe('methodInChild');
 		expect(result.fsPath).toBe(childFilePath);
@@ -173,8 +186,15 @@ describe('ParsedDocFinder', () => {
 
 	test('Find method overridden method in child', async () => {
 		const paths = getPaths(childFilePath);
-		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(parsedChild, paths);
-		const result = await searchParser(finder, 'methodInParentAndChild', { character: 0, line: 0 });
+		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(
+			parsedChild,
+			paths
+		);
+		const result = await searchParser(
+			finder,
+			'methodInParentAndChild',
+			{ character: 0, line: 0 }
+		);
 		expect(result.member.memberClass).toBe(MemberClass.method);
 		expect(result.member.id.value).toBe('methodInParentAndChild');
 		expect(result.fsPath).toBe(childFilePath);
@@ -182,8 +202,15 @@ describe('ParsedDocFinder', () => {
 
 	test('Find method inherited method in parent', async () => {
 		const paths = getPaths(childFilePath);
-		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(parsedChild, paths);
-		const result = await searchParser(finder, 'methodInParent', { character: 0, line: 0 });
+		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(
+			parsedChild,
+			paths
+		);
+		const result = await searchParser(
+			finder,
+			'methodInParent',
+			{ character: 0, line: 0 }
+		);
 		expect(result.member.memberClass).toBe(MemberClass.method);
 		expect(result.member.id.value).toBe('methodInParent');
 		expect(result.fsPath).toBe(parentFilePath);
@@ -191,8 +218,15 @@ describe('ParsedDocFinder', () => {
 
 	test('Find method in parent', async () => {
 		const paths = getPaths(parentFilePath);
-		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(parsedParent, paths);
-		const result = await searchParser(finder, 'methodInParent', { character: 0, line: 0 });
+		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(
+			parsedParent,
+			paths
+		);
+		const result = await searchParser(
+			finder,
+			'methodInParent',
+			{ character: 0, line: 0 }
+		);
 		expect(result.member.memberClass).toBe(MemberClass.method);
 		expect(result.member.id.value).toBe('methodInParent');
 		expect(result.fsPath).toBe(parentFilePath);
@@ -200,7 +234,10 @@ describe('ParsedDocFinder', () => {
 
 	test('Find y in methodInChild', async () => {
 		const paths = getPaths(childFilePath);
-		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(parsedChild, paths);
+		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(
+			parsedChild,
+			paths
+		);
 		const result = await searchParser(finder, 'y', { character: 0, line: 12 });
 		expect(result.member.memberClass).toBe(MemberClass.declaration);
 		expect(result.member.id.value).toBe('y');
@@ -209,28 +246,51 @@ describe('ParsedDocFinder', () => {
 
 	test('Do not find x', async () => {
 		const paths = getPaths(childFilePath);
-		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(parsedChild, paths);
+		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(
+			parsedChild,
+			paths
+		);
 		const result = await searchParser(finder, 'x', { character: 0, line: 12 });
-		expect(result).toBeUndefined();
+		expect(result).toBeNull();
 	});
 
 	test('Do not find reallySpecificName', async () => {
 		const paths = getPaths(childFilePath);
-		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(parsedChild, paths);
-		const result = await searchParser(finder, 'reallySpecificName', { character: 0, line: 10 });
-		expect(result).toBeUndefined();
+		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(
+			parsedChild,
+			paths
+		);
+		const result = await searchParser(
+			finder,
+			'reallySpecificName',
+			{ character: 0, line: 10 }
+		);
+		expect(result).toBeNull();
 	});
 
 	test('Do find reallySpecificName', async () => {
 		const paths = getPaths(parentFilePath);
-		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(parsedParent, paths);
-		const result = await searchParser(finder, 'reallySpecificName', { character: 0, line: 10 });
+		const finder: utilities.ParsedDocFinder = new utilities.ParsedDocFinder(
+			parsedParent,
+			paths
+		);
+		const result = await searchParser(
+			finder,
+			'reallySpecificName',
+			{ character: 0, line: 10 }
+		);
 		expect(result.member.memberClass).toBe(MemberClass.declaration);
 		expect(result.member.id.value).toBe('reallySpecificName');
 		expect(result.fsPath).toBe(parentFilePath);
 	});
 });
 
-function searchParser(finder: utilities.ParsedDocFinder, value: string, position: tokenizer.Position) {
-	return finder.searchParser(new tokenizer.Token(tokenizer.Type.Alphanumeric, value, position));
+function searchParser(
+	finder: utilities.ParsedDocFinder,
+	value: string,
+	position: tokenizer.Position
+) {
+	return finder.searchParser(
+		new tokenizer.Token(tokenizer.Type.Alphanumeric, value, position)
+	);
 }

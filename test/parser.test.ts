@@ -221,7 +221,8 @@ describe('Argument Names', () => {
 	});
 
 	test('2 argument multi type', () => {
-		const methodString = 'public static void main(void x1(Integer, Record), void x2(void, String))';
+		const methodString =
+			'public static void main(void x1(Integer, Record), void x2(void, String))';
 		const result = getMethod(methodString);
 		if (!result) {
 			fail();
@@ -232,7 +233,9 @@ describe('Argument Names', () => {
 	});
 
 	test('2 argument multiline and multi type', () => {
-		const methodString = 'public static void main(void x1(Integer, Record)\n\t, void x2(void, String))';
+		const methodString =
+			'public static void main(void x1(Integer, Record)\n' +
+			'\t, void x2(void, String))';
 		const result = getMethod(methodString);
 		if (!result) {
 			fail();
@@ -333,14 +336,18 @@ describe('Argument Types', () => {
 	});
 
 	test('test 2 argument 3 types newline', () => {
-		const methodString = 'public static void main(void x1(Integer, Record), void x2(void, String))';
+		const methodString =
+			'public static void main(void x1(Integer, Record), void x2(void, String))';
 		const result = getMethod(methodString);
 		if (!result) {
 			fail('Did not parse');
 			return;
 		}
 		const argValues = argsToValues(result.parameters);
-		expect(argValues).toEqual([['void', 'Integer', 'Record'], ['void', 'void', 'String']]);
+		expect(argValues).toEqual([
+			['void', 'Integer', 'Record'],
+			['void', 'void', 'String']
+		]);
 	});
 });
 
@@ -541,7 +548,9 @@ toString
 `;
 
 	const doc = getParsedDoc(documentString);
-	expect(doc.methods.map(method => method.id.value)).toEqual(['toInteger', 'toNumber', 'toString']);
+	expect(doc.methods.map(method => method.id.value)).toEqual(
+		['toInteger', 'toNumber', 'toString']
+	);
 	expect(doc.methods.map(method => method.line)).toEqual([9, 18, 27]);
 });
 

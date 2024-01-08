@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   original CHANGELOG are kept, even though the change log does not contain a
   lot of information.
 - Update this changelog to follow the latest format from *Keep a Changelog*.
+- Let functions return `null` instead of `undefined` for those functions where
+  not all paths had a return value.
+- Switched linter from `tslint` to `eslint`.
 
 ## [0.0.3] - 2019-04-19
 
@@ -34,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial publication.
 
-[Unreleased]: https://github.com/mischareitsma/logging-ts/compare/4814107ce1840d92c2ab0de99e31887014453d4c...HEAD
+[Unreleased]: https://github.com/ing-bank/psl-parser/compare/4814107ce1840d92c2ab0de99e31887014453d4c...HEAD
 
 <!--
 The links to 0.0.3 and earlier go to the commit where the package.json

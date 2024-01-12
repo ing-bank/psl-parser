@@ -19,14 +19,14 @@
 			"console": "integratedTerminal",
 			"internalConsoleOptions": "neverOpen",
 			"sourceMaps": true,
-			"preLaunchTask": "npm: build",
+			"preLaunchTask": "npm: compile",
 		},
 		{
 			"type": "node",
 			"request": "launch",
 			"name": "Debug current file",
 			"program": "${file}",
-			"preLaunchTask": "npm: build",
+			"preLaunchTask": "npm: compile",
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			]

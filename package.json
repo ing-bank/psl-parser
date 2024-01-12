@@ -2,6 +2,7 @@
   "name": "@mischareitsma/psl-parser",
   "version": "0.0.4",
   "description": "Profile Scripting Language Parser",
+  "type": "module",
   "keywords": [
     "PSL",
     "parser",

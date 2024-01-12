@@ -3,7 +3,7 @@
 		"noUnusedLocals": true,
 		"noUnusedParameters": false,
 		"moduleResolution": "node",
-		"module": "CommonJS",
+		"module": "esnext",
 		"target": "esnext",
 		"outDir": "out",
 		"lib": [

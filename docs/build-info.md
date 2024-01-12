@@ -24,7 +24,6 @@ available.
 | **compile** | Runs the TypeScript compiler for both tests and sources. |
 | **lint** | Runs **eslint** over the full project. |
 | **watch** | Runs **build** in watch mode. |
-| **pretest** | Runs before the test script. Runs the **compile** script. |
 | **test** | Runs all tests using **jest**. |
 | **dist** | Runs the TypeScript compiler for the source only, generating the distributed files. |
 | **prebuild** | Runs before the build. Runs the **clean**, **lint** and **test** script, making sure the build is valid. |
@@ -66,7 +65,8 @@ project, and describes how to create a new release. The following workflow
 can be followed for a release:
 
 - Make sure that the version in the [`package.json`](/package.json) is updated
-  to the correct version
+  to the correct version. Check the [version numbers](#version-numbering)
+  section for how to increment the version number.
 - Make sure the [`CHANGELOG.md`](/CHANGELOG.md) is updated with the latest
   changes, and that a new empty **Unreleased** section is added.
 - Create a new release in GitHub:
@@ -86,3 +86,20 @@ npm run release
 
 This script will go through all the steps to release (lint, compile, test,
 build and publish).
+
+## Version Numbering
+
+This project is using the standard semantic versioning scheme of
+`major.minor.patch`. The numbers increment as follows:
+
+- Major: Any breaking changes in the API. Increasing the major number signals
+  users of this module that it is highly likely they need to change their
+  software as well.
+- Minor: New non-breaking features. Any software project that is using this
+  module can safely update without the project breaking.
+- Patch: Bugfixes and non-breaking updates in dependencies. Increment the
+  patch number if a bug is fixed, or if a version of a direct dependency is
+  incremented, and the new version is not causing any breaking changes. Do not
+  update this number if only downstream dependencies are updated (i.e.: only
+  the package-lock.json file has an update, but the package.json file stays
+  the same.)

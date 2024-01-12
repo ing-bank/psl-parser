@@ -103,3 +103,31 @@ This project is using the standard semantic versioning scheme of
   update this number if only downstream dependencies are updated (i.e.: only
   the package-lock.json file has an update, but the package.json file stays
   the same.)
+
+## Updating Dependencies to Latest
+
+It is good practice to make sure that all the dependencies are regularly
+updated. The `npm outdated` command can show which dependencies are not up to
+date anymore. An `npm update` will not update all the dependencies to the latest
+version. For that, the `npm-check-updates` module can be used. To run:
+
+```shell
+npx npm-check-updates -u
+```
+
+This will update the `package.json` file with all the latest versions of all
+dependencies. After that run:
+
+```shell
+npm install
+```
+
+To verify the update of dependencies did not break anything run
+
+```shell
+npm run build
+```
+
+This will go through the entire process of linting, compiling, testing and
+preparing the dist folder with the distributed files. If that is all okay,
+increment the patch number and push the changes.

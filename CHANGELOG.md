@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Let functions return `null` instead of `undefined` for those functions where
   not all paths had a return value.
 - Switched linter from `tslint` to `eslint`.
+- Update all the dependencies to the latest version
+- Change the module type to ES module.
 
 ## [0.0.3] - 2019-04-19
 

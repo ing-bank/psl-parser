@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
-// Note from Mischa Reitsma on skipped enum rule: Check notes statementParser.
-
 export function* getTokens(documentContents: string): IterableIterator<Token> {
 	const t: Tokenizer = new Tokenizer();
 
@@ -214,10 +211,10 @@ export class Range {
 
 	constructor(a: number | Position, b: number | Position, c?: number, d?: number) {
 		if (
-			typeof a === 'number' &&
-			typeof b === 'number' &&
-			typeof c === 'number' &&
-			typeof d === 'number'
+			typeof a === "number" &&
+			typeof b === "number" &&
+			typeof c === "number" &&
+			typeof d === "number"
 		) {
 			this.start = new Position(a, b);
 			this.end = new Position(c, d);
@@ -273,7 +270,7 @@ class Tokenizer {
 
 		this.charType = 0;
 		this.tokenType = 0;
-		this.tokenValue = '';
+		this.tokenValue = "";
 		this.tokenPosition = { line: this.documentLine, character: this.documentColumn };
 
 		this.parsed = false;
@@ -319,12 +316,12 @@ class Tokenizer {
 				if (this.charType === Type.Slash) { // the last two chars are * /
 					this.finalizeToken(Type.BlockCommentTerm);
 					// add the * that was not yet added to the token
-					this.tokenValue = this.tokenValue + '*';
+					this.tokenValue = this.tokenValue + "*";
 					this.documentColumn++;
 					return true;
 				} else {
 					// add the * that was not yet added to the token
-					this.tokenValue = this.tokenValue + '*';
+					this.tokenValue = this.tokenValue + "*";
 					this.documentColumn++;
 				}
 			}
@@ -439,7 +436,7 @@ class Tokenizer {
 	finalizeToken(newType: number): void {
 		this.token = new Token(this.tokenType, this.tokenValue, this.tokenPosition);
 		this.tokenType = newType;
-		this.tokenValue = '';
+		this.tokenValue = "";
 		this.tokenPosition = { line: this.documentLine, character: this.documentColumn };
 	}
 }

@@ -1,7 +1,7 @@
-import * as fs from 'fs';
-import { Statement, StatementParser } from './statementParser';
-import { getTokens, Token, Type } from './tokenizer';
-import { getLineAfter } from './utilities';
+import * as fs from "fs";
+import { Statement, StatementParser } from "./statementParser";
+import { getTokens, Token, Type } from "./tokenizer";
+import { getLineAfter } from "./utilities";
 
 /**
  * Used for checking the type of Member at runtime
@@ -212,7 +212,7 @@ class _Method implements Method {
 		this.declarations = [];
 		this.endLine = -1;
 		this.memberClass = MemberClass.method;
-		this.documentation = '';
+		this.documentation = "";
 		this.statements = [];
 	}
 }
@@ -238,11 +238,11 @@ class _Parameter implements Parameter {
 }
 
 const NON_METHOD_KEYWORDS = [
-	'do', 'd', 'set', 's', 'if', 'i', 'for', 'f', 'while', 'w',
+	"do", "d", "set", "s", "if", "i", "for", "f", "while", "w",
 ];
 
 export const NON_TYPE_MODIFIERS = [
-	'public', 'static', 'private',
+	"public", "static", "private",
 ];
 
 export function parseText(sourceText: string): ParsedDocument {
@@ -320,7 +320,7 @@ class Parser {
 				if (
 					this.activeMethod &&
 					this.activeMethod.batch &&
-					this.activeMethod.id.value === 'REVHIST'
+					this.activeMethod.id.value === "REVHIST"
 				)
 					continue;
 
@@ -390,9 +390,9 @@ class Parser {
 			) {
 				return tokenBuffer[i + 1].value;
 			}
-			return '';
+			return "";
 		}
-		return '';
+		return "";
 	}
 
 	private lookForTypeDeclaration(tokenBuffer: Token[]): Declaration[] | undefined {
@@ -404,7 +404,7 @@ class Parser {
 				i++;
 				continue;
 			}
-			if (token.isAlphanumeric() && token.value === 'type') {
+			if (token.isAlphanumeric() && token.value === "type") {
 				for (let j = i + 1; j < tokenBuffer.length; j++) {
 					const loadToken = tokenBuffer[j];
 					if (loadToken.isSpace() || loadToken.isTab()) continue;
@@ -412,14 +412,14 @@ class Parser {
 					tokens.push(loadToken);
 				}
 			}
-			else if (token.isAlphanumeric() && token.value === 'catch') {
+			else if (token.isAlphanumeric() && token.value === "catch") {
 				for (let j = i + 1; j < tokenBuffer.length; j++) {
 					const loadToken = tokenBuffer[j];
 					if (loadToken.isSpace() || loadToken.isTab()) continue;
 					// if (loadToken.isEqualSign()) break;
 					tokens.push(new Token(
 						Type.Alphanumeric,
-						'Error',
+						"Error",
 						{ character: 0, line: 0 }
 					));
 					tokens.push(loadToken);
@@ -444,7 +444,7 @@ class Parser {
 			}
 			if (!hasType) {
 				if (token.type !== Type.Alphanumeric) break;
-				if (token.value === 'static') {
+				if (token.value === "static") {
 					modifiers.push(token);
 					hasType = true;
 				}
@@ -506,7 +506,7 @@ class Parser {
 				id = undefined;
 				continue;
 			}
-			else if (token.value === '\r') continue;
+			else if (token.value === "\r") continue;
 			else if (token.isBlockComment()) continue;
 			else if (token.isBlockCommentInit()) continue;
 			else if (token.isBlockCommentTerm()) continue;
@@ -539,13 +539,13 @@ class Parser {
 			else if (token.isNumberSign() && !classDef) {
 				const nextToken = tokenBuffer[i + 1];
 				if (!nextToken) return null;
-				if (nextToken.value === 'CLASSDEF') {
+				if (nextToken.value === "CLASSDEF") {
 					classDef = true;
 					i += 2;
 				}
 				else break;
 			}
-			else if (token.value === 'extends' && !extending) {
+			else if (token.value === "extends" && !extending) {
 				extending = true;
 				i++;
 			}
@@ -567,7 +567,7 @@ class Parser {
 		let i = 0;
 		let foundPackageToken = false;
 
-		let fullPackage = '';
+		let fullPackage = "";
 
 		while (i < tokenBuffer.length) {
 			const token = tokenBuffer[i];
@@ -578,8 +578,8 @@ class Parser {
 			}
 			else if (token.isNumberSign() && !foundPackageToken) {
 				const nextToken = tokenBuffer[i + 1];
-				if (!nextToken) return '';
-				if (nextToken.value === 'PACKAGE') {
+				if (!nextToken) return "";
+				if (nextToken.value === "PACKAGE") {
 					foundPackageToken = true;
 					i += 2;
 				}
@@ -587,11 +587,11 @@ class Parser {
 			}
 			else if (token.isAlphanumeric() && foundPackageToken) {
 				// TODO: Maybe this should return an ordered list of tokens?
-				if (fullPackage === '') {
+				if (fullPackage === "") {
 					fullPackage = token.value;
 				}
 				else {
-					fullPackage += ('.' + token.value);
+					fullPackage += ("." + token.value);
 				}
 				i++;
 			}
@@ -599,10 +599,10 @@ class Parser {
 				i++;
 			}
 		}
-		if (fullPackage !== '') {
+		if (fullPackage !== "") {
 			return fullPackage;
 		}
-		return '';
+		return "";
 	}
 
 	private skipToNextDeclaration(identifiers: Token[], tokenIndex: number): number {
@@ -625,7 +625,7 @@ class Parser {
 
 	private isDeclarationKeyword(token: Token) {
 		if (token.type !== Type.Alphanumeric) return false;
-		const keywords = ['public', 'private', 'new', 'literal'];
+		const keywords = ["public", "private", "new", "literal"];
 		return keywords.indexOf(token.value) !== -1;
 	}
 
@@ -655,20 +655,20 @@ class Parser {
 			}
 			if (token.isNumberSign()) {
 				token = tokenBuffer[i + 1];
-				if (token && token.value === 'PROPERTYDEF') {
+				if (token && token.value === "PROPERTYDEF") {
 					const tokens = tokenBuffer.filter(t => {
 						if (t.isNumberSign()) return false;
-						if (t.value === 'PROPERTYDEF') return false;
+						if (t.value === "PROPERTYDEF") return false;
 						return t.type !== Type.Space && t.type !== Type.Tab;
 					},
 					);
 					const classTypes: Token[] = [];
 					const classIndex = tokens.findIndex(
-						t => t.value === 'class'
+						t => t.value === "class"
 					);
 					if (
 						tokens[classIndex + 1]
-						&& tokens[classIndex + 1].value === '='
+						&& tokens[classIndex + 1].value === "="
 						&& tokens[classIndex + 2]
 						&& tokens[classIndex + 2].isAlphanumeric()
 					) {
@@ -697,9 +697,9 @@ class Parser {
 	private findPropertyModifiers(tokens: Token[]) {
 		return tokens.filter(t => {
 			return (
-				t.value === 'private' ||
-				t.value === 'literal' ||
-				t.value === 'public'
+				t.value === "private" ||
+				t.value === "literal" ||
+				t.value === "public"
 			);
 		});
 	}
@@ -744,7 +744,7 @@ class Parser {
 			) {
 				continue;
 			}
-			else if (this.activeToken.value === '\r') continue;
+			else if (this.activeToken.value === "\r") continue;
 			else if (this.activeToken.isCloseParen()) {
 				if (!method.closeParen) {
 					method.closeParen = this.activeToken;
@@ -826,15 +826,15 @@ class Parser {
 			else if (this.activeToken.isAlphanumeric()) {
 				if (!param) param = new _Parameter();
 				// let value = this.activeToken.value;
-				if (this.activeToken.value === 'req') {
+				if (this.activeToken.value === "req") {
 					param.modifiers.push(this.activeToken);
 					param.req = true;
 				}
-				else if (this.activeToken.value === 'ret') {
+				else if (this.activeToken.value === "ret") {
 					param.modifiers.push(this.activeToken);
 					param.ret = true;
 				}
-				else if (this.activeToken.value === 'literal') {
+				else if (this.activeToken.value === "literal") {
 					param.modifiers.push(this.activeToken);
 					param.literal = true;
 				}
@@ -907,6 +907,6 @@ class Parser {
 	}
 
 	private getDummy() {
-		return new Token(Type.Undefined, '', this.activeToken.position);
+		return new Token(Type.Undefined, "", this.activeToken.position);
 	}
 }

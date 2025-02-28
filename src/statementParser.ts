@@ -1,16 +1,10 @@
 /* eslint-disable no-case-declarations */
-/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
 /*
 Notes from Mischa Reitsma on skipped rules:
 - The no case declarations rule can be fixed by making sure the code in the cases go to dedicated
   functions. It would make the code way more maintainable and readable.
-- The unsafe enum comparison needs to be fixed later. There is some mismatch in using string values
-  or enum values it seems. The tokenize values are not linked to an enum? But a lot of switch/case
-  and if/else statements actually compare the values to enum values. A quick fix would be to add
-  a `.valueOf()` everywhere where an enum is used, but that is rather hacky and beats the purpose of
-  enums. Better to solve it properly.
 */
-import {getTokens, Token, Type} from './tokenizer';
+import {getTokens, Token, Type} from "./tokenizer";
 
 export enum SyntaxKind {
 	ASSIGNMENT,
@@ -34,53 +28,53 @@ export enum SyntaxKind {
 }
 
 enum OPERATOR_VALUE {
-	AND_LITERAL = 'and',
-	APOSTROPHE = '\'',
-	AT = '@',
-	BACK_SLASH = '\\',
-	CARROT = '^',
-	COLON = ':',
-	DOLLAR = '$',
-	DOT = '.',
-	EQUAL = '=',
-	EXCLAMATION = '!',
-	GREATER_THAN = '>',
-	HASH = '#',
-	LEFT_BRACKET = '[',
-	LESS_THAN = '<',
-	MINUS = '-',
-	NOT_LITERAL = 'not',
-	OR_LITERAL = 'or',
-	PLUS = '+',
-	QUESTION_MARK = '?',
-	RIGHT_BRACKET = ']',
-	SLASH = '/',
-	STAR = '*',
-	UNDERSCORE = '_',
-	RET = 'ret',
+	AND_LITERAL = "and",
+	APOSTROPHE = "'",
+	AT = "@",
+	BACK_SLASH = "\\",
+	CARROT = "^",
+	COLON = ":",
+	DOLLAR = "$",
+	DOT = ".",
+	EQUAL = "=",
+	EXCLAMATION = "!",
+	GREATER_THAN = ">",
+	HASH = "#",
+	LEFT_BRACKET = "[",
+	LESS_THAN = "<",
+	MINUS = "-",
+	NOT_LITERAL = "not",
+	OR_LITERAL = "or",
+	PLUS = "+",
+	QUESTION_MARK = "?",
+	RIGHT_BRACKET = "]",
+	SLASH = "/",
+	STAR = "*",
+	UNDERSCORE = "_",
+	RET = "ret",
 }
 
 enum STORAGE_MODIFIERS {
-	STATIC = 'static',
-	NEW = 'new',
-	LITERAL = 'literal',
+	STATIC = "static",
+	NEW = "new",
+	LITERAL = "literal",
 }
 
 enum ACCESS_MODIFIERS {
-	PUBLIC = 'public',
-	PRIVATE = 'private',
+	PUBLIC = "public",
+	PRIVATE = "private",
 }
 
 enum STATEMENT_KEYWORD {
-	DO = 'do',
-	SET = 'set',
-	IF = 'if',
-	CATCH = 'catch',
-	FOR = 'for',
-	QUIT = 'quit',
-	RETURN = 'return',
-	WHILE = 'while',
-	TYPE = 'type',
+	DO = "do",
+	SET = "set",
+	IF = "if",
+	CATCH = "catch",
+	FOR = "for",
+	QUIT = "quit",
+	RETURN = "return",
+	WHILE = "while",
+	TYPE = "type",
 }
 
 interface Operator {
@@ -188,7 +182,7 @@ export class StatementParser {
 	activeToken: Token | undefined;
 
 	constructor(arg: string | IterableIterator<Token> | Token[]) {
-		if (typeof arg === 'string') {
+		if (typeof arg === "string") {
 			this.tokenizer = getTokens(arg);
 		}
 		else if (Array.isArray(arg)) {
@@ -370,11 +364,12 @@ export class StatementParser {
 					const declaration = node as DeclarationStatement;
 					if (declaration.args) {
 						declaration.args = declaration.args
-						.map((arg: Identifier) => {
-							if (!arg) return null;
-							arg.kind = SyntaxKind.TYPE_IDENTIFIER;
-							return arg;
-						});
+							.map((arg: Identifier) => {
+								if (!arg) return null;
+								arg.kind = 
+									SyntaxKind.TYPE_IDENTIFIER;
+								return arg;
+							});
 					}
 				}
 				return true;
@@ -583,7 +578,7 @@ export class StatementParser {
 		const unaryOperator: Token[] = this.parseUnaryOperator(includeRet);
 		if (!this.activeToken) {
 			return {
-				id: new Token(Type.Undefined, '', { character: 0, line: 0 }),
+				id: new Token(Type.Undefined, "", { character: 0, line: 0 }),
 				kind: SyntaxKind.IDENTIFIER,
 				unaryOperator,
 			};

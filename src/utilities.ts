@@ -1,9 +1,9 @@
-import * as fs from 'fs-extra';
-import * as jsonc from 'jsonc-parser';
-import * as path from 'path';
-import { FinderPaths } from './config';
-import { Member, MemberClass, Method, ParsedDocument, parseText, Property } from './parser';
-import { Position, Token, Type } from './tokenizer';
+import * as fs from "fs-extra";
+import * as jsonc from "jsonc-parser";
+import * as path from "path";
+import { FinderPaths } from "./config";
+import { Member, MemberClass, Method, ParsedDocument, parseText, Property } from "./parser";
+import { Position, Token, Type } from "./tokenizer";
 
 export interface FinderResult {
 	fsPath: string;
@@ -29,7 +29,7 @@ export class ParsedDocFinder {
 		this.paths = paths;
 		if (getWorkspaceDocumentText)
 			this.getWorkspaceDocumentText = getWorkspaceDocumentText;
-		this.procName = path.basename(this.paths.activeRoutine).split('.')[0];
+		this.procName = path.basename(this.paths.activeRoutine).split(".")[0];
 	}
 
 	async resolveResult(callTokens: Token[]): Promise<FinderResult> {
@@ -51,14 +51,14 @@ export class ParsedDocFinder {
 						fsPath: finder.paths.activeRoutine,
 					};
 				}
-				const tableName = callTokens[0].value.replace('Record', '');
+				const tableName = callTokens[0].value.replace("Record", "");
 				const fileDefinitionDirectory =
 					await this.resolveFileDefinitionDirectory(tableName);
 				if (fileDefinitionDirectory) {
 					return {
 						fsPath: path.join(
 							fileDefinitionDirectory,
-							tableName.toUpperCase() + '.TBL'
+							tableName.toUpperCase() + ".TBL"
 						),
 					};
 				}
@@ -69,7 +69,7 @@ export class ParsedDocFinder {
 					};
 				}
 				else if (
-					callTokens[0].value === 'this' ||
+					callTokens[0].value === "this" ||
 					callTokens[0].value === this.procName
 				) {
 					return {
@@ -102,9 +102,9 @@ export class ParsedDocFinder {
 						finder = await finder.newFinder(token.value);
 						continue;
 					}
-					// skip over 'this'
+					// skip over "this"
 					else if (
-						token.value === 'this' ||
+						token.value === "this" ||
 						token.value === this.procName
 					) {
 						result = {
@@ -128,7 +128,7 @@ export class ParsedDocFinder {
 				if (!result) return null;
 				if (!callTokens[index + 1]) return result;
 				let type = result.member.types[0].value;
-				if (type === 'void') type = 'Primitive'; // TODO whack hack
+				if (type === "void") type = "Primitive"; // TODO whack hack
 				finder = await finder.newFinder(type);
 				result = undefined;
 			}
@@ -138,19 +138,19 @@ export class ParsedDocFinder {
 
 	async newFinder(routineName: string): Promise<ParsedDocFinder> {
 
-		if (routineName.startsWith('Record') && routineName !== 'Record') {
-			const tableName = routineName.replace('Record', '');
+		if (routineName.startsWith("Record") && routineName !== "Record") {
+			const tableName = routineName.replace("Record", "");
 			const tableDirectory = await this.resolveFileDefinitionDirectory(
 				tableName.toLowerCase()
 			);
 			
 			if (!tableDirectory) return null;
 			const columns: Property[] = (await fs.readdir(tableDirectory))
-				.filter(file => file.endsWith('.COL'))
+				.filter(file => file.endsWith(".COL"))
 				.map(col => {
 					const colName = col
-						.replace(`${tableName}-`, '')
-						.replace('.COL', '')
+						.replace(`${tableName}-`, "")
+						.replace(".COL", "")
 						.toLowerCase();
 					const ret: Property = {
 						id: new Token(
@@ -162,13 +162,12 @@ export class ParsedDocFinder {
 						modifiers: [],
 						types: [new Token(
 							Type.Alphanumeric,
-							'String',
+							"String",
 							dummyPosition
-							)
-						],
+						)],
 					};
-				return ret;
-			});
+					return ret;
+				});
 			const text = await this.getWorkspaceDocumentText(
 				path.join(tableDirectory, `${tableName.toUpperCase()}.TBL`)
 			);
@@ -176,7 +175,7 @@ export class ParsedDocFinder {
 			const parsed: Record<string, string> =
 				jsonc.parse(text) as Record<string, string>;
 			const parentFileId = parsed.PARFID;
-			const extendingValue = parentFileId ? `Record${parentFileId}` : 'Record';
+			const extendingValue = parentFileId ? `Record${parentFileId}` : "Record";
 			const parsedDocument: ParsedDocument = {
 				comments: [],
 				declarations: [],
@@ -187,16 +186,15 @@ export class ParsedDocFinder {
 				),
 				methods: [],
 				properties: columns,
-				pslPackage: '',
+				pslPackage: "",
 				tokens: [],
 			};
 			const newPaths: FinderPaths = Object.create(this.paths) as FinderPaths;
-			newPaths.activeRoutine = '';
+			newPaths.activeRoutine = "";
 			newPaths.activeTable = tableDirectory;
 			return new ParsedDocFinder(
 				parsedDocument,
 				newPaths,
-				// eslint-disable-next-line @typescript-eslint/unbound-method
 				this.getWorkspaceDocumentText
 			);
 		}
@@ -204,7 +202,7 @@ export class ParsedDocFinder {
 			.map(pslPath => path.join(pslPath, routineName));
 
 		for (const pathWithoutExtension of pathsWithoutExtensions) {
-			for (const extension of ['.PROC', '.psl', '.PSL']) {
+			for (const extension of [".PROC", ".psl", ".PSL"]) {
 				const possiblePath = pathWithoutExtension + extension;
 				const routineText = await this.getWorkspaceDocumentText(
 					possiblePath
@@ -216,7 +214,6 @@ export class ParsedDocFinder {
 				return new ParsedDocFinder(
 					parseText(routineText),
 					newPaths,
-					// eslint-disable-next-line @typescript-eslint/unbound-method
 					this.getWorkspaceDocumentText
 				);
 			}
@@ -249,7 +246,7 @@ export class ParsedDocFinder {
 						this.paths.activeTable,
 						`${tableName}-` +
 							foundProperty.id.value.toUpperCase() +
-							'.COL'
+							".COL"
 					),
 					member: foundProperty,
 				};
@@ -296,7 +293,7 @@ export class ParsedDocFinder {
 							this.paths.activeTable,
 							`${tableName}-` +
 								property.id.value.toUpperCase() +
-								'.COL'
+								".COL"
 						)
 					},
 				);
@@ -329,7 +326,7 @@ export class ParsedDocFinder {
 				return directory;
 			}
 		}
-		return '';
+		return "";
 	}
 
 	private async searchForParent(parentRoutineName: string): Promise<ParsedDocFinder> {
@@ -357,7 +354,7 @@ export class ParsedDocFinder {
 	}
 
 	private async getWorkspaceDocumentText(fsPath: string): Promise<string> {
-		return fs.readFile(fsPath).then(b => b.toString()).catch(() => '');
+		return fs.readFile(fsPath).then(b => b.toString()).catch(() => "");
 	}
 
 }
@@ -365,7 +362,7 @@ export class ParsedDocFinder {
 async function getPslClsNames(dir: string) {
 	try {
 		const names = await fs.readdir(dir);
-		return names.map(name => name.split('.')[0]);
+		return names.map(name => name.split(".")[0]);
 	}
 	catch {
 		return [];

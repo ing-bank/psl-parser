@@ -1,5 +1,5 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import * as fs from "fs-extra";
+import * as path from "path";
 
 type ConfigBaseDir = string;
 
@@ -60,8 +60,8 @@ export interface FinderPaths {
 
 export function getFinderPaths(currentDir: string, activeRoutine?: string): FinderPaths {
 
-	const defaultPslSources = ['dataqwik/procedure/', 'psl/'];
-	const defaultFileDefinitionSources = ['dataqwik/table/'];
+	const defaultPslSources = ["dataqwik/procedure/", "psl/"];
+	const defaultFileDefinitionSources = ["dataqwik/table/"];
 
 	const config: ProjectConfig | undefined = activeConfigs.get(currentDir);
 
@@ -79,10 +79,10 @@ export function getFinderPaths(currentDir: string, activeRoutine?: string): Find
 	const relativePslSources = (config && config.pslSources)
 		? config.pslSources : defaultPslSources;
 
-		const relativeFileDefinitionSource = config && config.fileDefinitionSources ?
-		config.fileDefinitionSources : defaultFileDefinitionSources;
+	const relativeFileDefinitionSource = config && config.fileDefinitionSources
+		? config.fileDefinitionSources : defaultFileDefinitionSources;
 
-	const corePsl = path.join(currentDir, '.vscode/pslcls/');
+	const corePsl = path.join(currentDir, ".vscode/pslcls/");
 	// load core first
 	projectPsl.push(corePsl);
 

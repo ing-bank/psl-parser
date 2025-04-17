@@ -1,4 +1,5 @@
-import * as fs from "fs-extra";
+import * as fs from "fs";
+import * as fsx from "fs-extra";
 import * as jsonc from "jsonc-parser";
 import * as path from "path";
 import { FinderPaths } from "./config";
@@ -145,7 +146,7 @@ export class ParsedDocFinder {
 			);
 			
 			if (!tableDirectory) return null;
-			const columns: Property[] = (await fs.readdir(tableDirectory))
+			const columns: Property[] = (await fsx.readdir(tableDirectory))
 				.filter(file => file.endsWith(".COL"))
 				.map(col => {
 					const colName = col
@@ -322,7 +323,7 @@ export class ParsedDocFinder {
 	async resolveFileDefinitionDirectory(tableName: string): Promise<string> {
 		for (const tableSource of this.paths.tables) {
 			const directory = path.join(tableSource, tableName.toLowerCase());
-			if (await fs.pathExists(directory)) {
+			if (await fsx.pathExists(directory)) {
 				return directory;
 			}
 		}
@@ -354,14 +355,20 @@ export class ParsedDocFinder {
 	}
 
 	private async getWorkspaceDocumentText(fsPath: string): Promise<string> {
-		return fs.readFile(fsPath).then(b => b.toString()).catch(() => "");
+		return new Promise((resolve) => {
+			fs.readFile(fsPath, (err, data) => {
+				if (err) resolve("");
+
+				resolve(data.toString());
+			});
+		});
 	}
 
 }
 
 async function getPslClsNames(dir: string) {
 	try {
-		const names = await fs.readdir(dir);
+		const names = await fsx.readdir(dir);
 		return names.map(name => name.split(".")[0]);
 	}
 	catch {

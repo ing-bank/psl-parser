@@ -1,3 +1,6 @@
+import { describe, test, before } from "node:test";
+import * as assert from "node:assert/strict";
+
 import * as path from "path";
 import { MemberClass, ParsedDocument, parseFile } from "../src";
 import { FinderPaths } from "../src/config";
@@ -13,110 +16,110 @@ describe("completion", () => {
 		const tokensOnLine: tokenizer.Token[] = [];
 		const index = 0;
 		const result = utilities.getCallTokens(tokensOnLine, index);
-		expect(result.length).toBe(0);
+		assert.strictEqual(result.length, 0);
 	});
 	test("undefined", () => {
 		const tokensOnLine: tokenizer.Token[] = getTokens("a()");
 		const index = 1;
 		const result = utilities.getCallTokens(tokensOnLine, index);
-		expect(result.length).toBe(0);
+		assert.strictEqual(result.length, 0);
 	});
 	test("undefined 2", () => {
 		const tokensOnLine: tokenizer.Token[] = getTokens("a()");
 		const index = 2;
 		const result = utilities.getCallTokens(tokensOnLine, index);
-		expect(result.length).toBe(0);
+		assert.strictEqual(result.length, 0);
 	});
 	test("undefined 3", () => {
 		const tokensOnLine: tokenizer.Token[] = getTokens("a ");
 		const index = 1;
 		const result = utilities.getCallTokens(tokensOnLine, index);
-		expect(result.length).toBe(0);
+		assert.strictEqual(result.length, 0);
 	});
 	test("basic dot", () => {
 		const tokensOnLine: tokenizer.Token[] = getTokens("a.b");
 		const index = 2;
 		const result = utilities.getCallTokens(tokensOnLine, index);
-		expect(result[0].value).toBe("a");
-		expect(result[1].value).toBe("b");
+		assert.strictEqual(result[0].value, "a");
+		assert.strictEqual(result[1].value, "b");
 	});
 	test("two dots", () => {
 		const tokensOnLine: tokenizer.Token[] = getTokens("a.b.c");
 		const index = 4;
 		const result = utilities.getCallTokens(tokensOnLine, index);
-		expect(result[0].value).toBe("a");
-		expect(result[1].value).toBe("b");
-		expect(result[2].value).toBe("c");
+		assert.strictEqual(result[0].value, "a");
+		assert.strictEqual(result[1].value, "b");
+		assert.strictEqual(result[2].value, "c");
 	});
 	test("single reference", () => {
 		const tokensOnLine: tokenizer.Token[] = getTokens("do a()");
 		const index = 2;
 		const result = utilities.getCallTokens(tokensOnLine, index);
-		expect(result[0].value).toBe("a");
+		assert.strictEqual(result[0].value, "a");
 	});
 	test("dot with parens", () => {
 		const tokensOnLine: tokenizer.Token[] = getTokens("a().b");
 		const index = 4;
 		const result = utilities.getCallTokens(tokensOnLine, index);
-		expect(result[0].value).toBe("a");
-		expect(result[1].value).toBe("b");
+		assert.strictEqual(result[0].value, "a");
+		assert.strictEqual(result[1].value, "b");
 	});
 	test("dot with parens content", () => {
 		const tokensOnLine: tokenizer.Token[] = getTokens("a(blah).b");
 		const index = 5;
 		const result = utilities.getCallTokens(tokensOnLine, index);
-		expect(result[0].value).toBe("a");
-		expect(result[1].value).toBe("b");
+		assert.strictEqual(result[0].value, "a");
+		assert.strictEqual(result[1].value, "b");
 	});
 	test("dot with parens content with parens", () => {
 		const tokensOnLine: tokenizer.Token[] = getTokens("a(blah(blah())).b");
 		const index = 10;
 		const result = utilities.getCallTokens(tokensOnLine, index);
-		expect(result[0].value).toBe("a");
-		expect(result[1].value).toBe("b");
+		assert.strictEqual(result[0].value, "a");
+		assert.strictEqual(result[1].value, "b");
 	});
 	test("dot with parens content on dot", () => {
 		const tokensOnLine: tokenizer.Token[] = getTokens("a(blah).b");
 		const index = 4;
 		const result = utilities.getCallTokens(tokensOnLine, index);
-		expect(result[0].value).toBe("a");
-		expect(result[1].value).toBe(".");
+		assert.strictEqual(result[0].value, "a");
+		assert.strictEqual(result[1].value, ".");
 	});
 	test("clusterDuck", () => {
 		const tokensOnLine: tokenizer.Token[] = getTokens("a.b().c(x(y)).d");
 		const index = 14;
 		const result = utilities.getCallTokens(tokensOnLine, index);
-		expect(result[0].value).toBe("a");
-		expect(result[1].value).toBe("b");
-		expect(result[2].value).toBe("c");
-		expect(result[3].value).toBe("d");
+		assert.strictEqual(result[0].value, "a");
+		assert.strictEqual(result[1].value, "b");
+		assert.strictEqual(result[2].value, "c");
+		assert.strictEqual(result[3].value, "d");
 	});
 	test("clusterDuck2", () => {
 		const tokensOnLine: tokenizer.Token[] = getTokens("a.b().c(x(y)).d");
 		const index = 14;
 		const result = utilities.getCallTokens(tokensOnLine, index);
-		expect(result[0].value).toBe("a");
-		expect(result[1].value).toBe("b");
-		expect(result[2].value).toBe("c");
-		expect(result[3].value).toBe("d");
+		assert.strictEqual(result[0].value, "a");
+		assert.strictEqual(result[1].value, "b");
+		assert.strictEqual(result[2].value, "c");
+		assert.strictEqual(result[3].value, "d");
 	});
 	test("mumps call label", () => {
 		const tokensOnLine: tokenizer.Token[] = getTokens("method^CLASS()");
 		const index = 0;
 		const result = utilities.getCallTokens(tokensOnLine, index);
-		expect(result[1].value).toBe("method");
-		expect(result[0].value).toBe("CLASS");
+		assert.strictEqual(result[1].value, "method");
+		assert.strictEqual(result[0].value, "CLASS");
 	});
 
 	test("mumps call routine", () => {
 		const tokensOnLine: tokenizer.Token[] = getTokens("method^CLASS()");
 		const index = 2;
 		const result = utilities.getCallTokens(tokensOnLine, index);
-		expect(result[0].value).toBe("CLASS");
+		assert.strictEqual(result[0].value, "CLASS");
 	});
 });
 
-describe("ParsedDocFinder", () => {
+describe("ParsedDocFinder", async () => {
 	let filesDir: string;
 
 	let parentFilePath: string;
@@ -134,7 +137,7 @@ describe("ParsedDocFinder", () => {
 		};
 	};
 
-	beforeAll(async () => {
+	before(async () => {
 		filesDir = path.resolve("test", "files");
 
 		parentFilePath = path.join(filesDir, "ZParent.PROC");
@@ -151,9 +154,9 @@ describe("ParsedDocFinder", () => {
 			paths
 		);
 		const result = await searchParser(finder, "dummy", { character: 0, line: 0 });
-		expect(result.member.memberClass).toBe(MemberClass.property);
-		expect(result.member.id.value).toBe("dummy");
-		expect(result.fsPath).toBe(childFilePath);
+		assert.strictEqual(result.member.memberClass, MemberClass.property);
+		assert.strictEqual(result.member.id.value, "dummy");
+		assert.strictEqual(result.fsPath, childFilePath);
 	});
 
 	test("Find property in child", async () => {
@@ -163,9 +166,9 @@ describe("ParsedDocFinder", () => {
 			paths
 		);
 		const result = await searchParser(finder, "propInChild", { character: 0, line: 0 });
-		expect(result.member.memberClass).toBe(MemberClass.property);
-		expect(result.member.id.value).toBe("propInChild");
-		expect(result.fsPath).toBe(childFilePath);
+		assert.strictEqual(result.member.memberClass, MemberClass.property);
+		assert.strictEqual(result.member.id.value, "propInChild");
+		assert.strictEqual(result.fsPath, childFilePath);
 	});
 
 	test("Find method in child", async () => {
@@ -179,9 +182,9 @@ describe("ParsedDocFinder", () => {
 			"methodInChild",
 			{ character: 0, line: 0 }
 		);
-		expect(result.member.memberClass).toBe(MemberClass.method);
-		expect(result.member.id.value).toBe("methodInChild");
-		expect(result.fsPath).toBe(childFilePath);
+		assert.strictEqual(result.member.memberClass, MemberClass.method);
+		assert.strictEqual(result.member.id.value, "methodInChild");
+		assert.strictEqual(result.fsPath, childFilePath);
 	});
 
 	test("Find method overridden method in child", async () => {
@@ -195,9 +198,9 @@ describe("ParsedDocFinder", () => {
 			"methodInParentAndChild",
 			{ character: 0, line: 0 }
 		);
-		expect(result.member.memberClass).toBe(MemberClass.method);
-		expect(result.member.id.value).toBe("methodInParentAndChild");
-		expect(result.fsPath).toBe(childFilePath);
+		assert.strictEqual(result.member.memberClass, MemberClass.method);
+		assert.strictEqual(result.member.id.value, "methodInParentAndChild");
+		assert.strictEqual(result.fsPath, childFilePath);
 	});
 
 	test("Find method inherited method in parent", async () => {
@@ -211,9 +214,9 @@ describe("ParsedDocFinder", () => {
 			"methodInParent",
 			{ character: 0, line: 0 }
 		);
-		expect(result.member.memberClass).toBe(MemberClass.method);
-		expect(result.member.id.value).toBe("methodInParent");
-		expect(result.fsPath).toBe(parentFilePath);
+		assert.strictEqual(result.member.memberClass, MemberClass.method);
+		assert.strictEqual(result.member.id.value, "methodInParent");
+		assert.strictEqual(result.fsPath, parentFilePath);
 	});
 
 	test("Find method in parent", async () => {
@@ -227,9 +230,9 @@ describe("ParsedDocFinder", () => {
 			"methodInParent",
 			{ character: 0, line: 0 }
 		);
-		expect(result.member.memberClass).toBe(MemberClass.method);
-		expect(result.member.id.value).toBe("methodInParent");
-		expect(result.fsPath).toBe(parentFilePath);
+		assert.strictEqual(result.member.memberClass, MemberClass.method);
+		assert.strictEqual(result.member.id.value, "methodInParent");
+		assert.strictEqual(result.fsPath, parentFilePath);
 	});
 
 	test("Find y in methodInChild", async () => {
@@ -239,9 +242,9 @@ describe("ParsedDocFinder", () => {
 			paths
 		);
 		const result = await searchParser(finder, "y", { character: 0, line: 12 });
-		expect(result.member.memberClass).toBe(MemberClass.declaration);
-		expect(result.member.id.value).toBe("y");
-		expect(result.fsPath).toBe(childFilePath);
+		assert.strictEqual(result.member.memberClass, MemberClass.declaration);
+		assert.strictEqual(result.member.id.value, "y");
+		assert.strictEqual(result.fsPath, childFilePath);
 	});
 
 	test("Do not find x", async () => {
@@ -251,7 +254,7 @@ describe("ParsedDocFinder", () => {
 			paths
 		);
 		const result = await searchParser(finder, "x", { character: 0, line: 12 });
-		expect(result).toBeNull();
+		assert.strictEqual(result, null);
 	});
 
 	test("Do not find reallySpecificName", async () => {
@@ -265,7 +268,7 @@ describe("ParsedDocFinder", () => {
 			"reallySpecificName",
 			{ character: 0, line: 10 }
 		);
-		expect(result).toBeNull();
+		assert.strictEqual(result, null);
 	});
 
 	test("Do find reallySpecificName", async () => {
@@ -279,9 +282,9 @@ describe("ParsedDocFinder", () => {
 			"reallySpecificName",
 			{ character: 0, line: 10 }
 		);
-		expect(result.member.memberClass).toBe(MemberClass.declaration);
-		expect(result.member.id.value).toBe("reallySpecificName");
-		expect(result.fsPath).toBe(parentFilePath);
+		assert.strictEqual(result.member.memberClass, MemberClass.declaration);
+		assert.strictEqual(result.member.id.value, "reallySpecificName");
+		assert.strictEqual(result.fsPath, parentFilePath);
 	});
 });
 

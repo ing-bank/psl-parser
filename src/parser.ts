@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import * as fs from "node:fs";
 import { Statement, StatementParser } from "./statementParser";
 import { getTokens, Token, Type } from "./tokenizer";
 import { getLineAfter } from "./utilities";

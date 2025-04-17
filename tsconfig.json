@@ -3,14 +3,14 @@
 		"noUnusedLocals": true,
 		"noUnusedParameters": false,
 		"moduleResolution": "node",
-		"module": "CommonJS",
-		"target": "esnext",
-		"outDir": "out",
+		"module": "ESNext",
+		"target": "ESNext",
 		"lib": [
-			"esnext"
+			"ESNext"
 		],
 		"inlineSourceMap": true,
-		"rootDirs": ["src", "test"],
+		"rootDir":"src",
+		"outDir": "dist",
 		"alwaysStrict": true,
 		"noImplicitThis": true,
 		"forceConsistentCasingInFileNames": true,

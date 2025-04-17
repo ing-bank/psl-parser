@@ -32,10 +32,10 @@ export class Token {
 
 	getRange() {
 		const startPosition: Position = this.position;
-		const endPosition: Position = {
-			line: this.position.line,
-			character: this.position.character + this.value.length
-		};
+		const endPosition: Position = new Position(
+			this.position.line,
+			this.position.character + this.value.length
+		);
 		return new Range(startPosition, endPosition);
 	}
 	isWhiteSpace() {
@@ -271,7 +271,7 @@ class Tokenizer {
 		this.charType = 0;
 		this.tokenType = 0;
 		this.tokenValue = "";
-		this.tokenPosition = { line: this.documentLine, character: this.documentColumn };
+		this.tokenPosition = new Position(this.documentLine, this.documentColumn);
 
 		this.parsed = false;
 		this.stringOpen = false;
@@ -437,7 +437,7 @@ class Tokenizer {
 		this.token = new Token(this.tokenType, this.tokenValue, this.tokenPosition);
 		this.tokenType = newType;
 		this.tokenValue = "";
-		this.tokenPosition = { line: this.documentLine, character: this.documentColumn };
+		this.tokenPosition = new Position(this.documentLine, this.documentColumn);
 	}
 }
 

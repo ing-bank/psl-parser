@@ -9,7 +9,8 @@
 			"ESNext"
 		],
 		"inlineSourceMap": true,
-		"rootDir":"src",
+		"declaration": true,
+		"rootDir": "src",
 		"outDir": "dist",
 		"alwaysStrict": true,
 		"noImplicitThis": true,
@@ -25,8 +26,7 @@
 		"dist",
 		"lib",
 		"tmp",
-		"jest.config.ts",
-		"build-package-json.js",
 		"test",
+		"build-package-json.js",
 	],
 }

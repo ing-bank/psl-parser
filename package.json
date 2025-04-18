@@ -1,6 +1,6 @@
 {
   "name": "@mischareitsma/psl-parser",
-  "version": "0.0.7",
+  "version": "0.1.0-alpha0",
   "description": "Profile Scripting Language Parser",
   "type": "module",
   "keywords": [
@@ -28,18 +28,15 @@
   "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/ing-bank/psl-parser.git"
+    "url": "git+https://git@github.com/ing-bank/psl-parser.git"
   },
   "scripts": {
-    "clean": "rimraf lib out dist *.tsbuildinfo",
-    "precompile": "npm run clean",
+    "clean": "rimraf dist *.tsbuildinfo",
     "compile": "tsc -p tsconfig.json",
-    "lint": "npx eslint .",
-    "watch": "npm run compile -- -watch",
-    "test": "node --test --no-warnings --import tsx test/*.test.ts",
-    "dist": "tsc -p tsconfig.build.json",
     "prebuild": "npm run clean && npm run lint && npm run test",
-    "build": "npm run dist && npm run generate-package-json && npm run copy-extra-files-dist",
+    "build": "npm run compile && npm run generate-package-json && npm run copy-extra-files-dist",
+    "lint": "npx eslint .",
+    "test": "node --test --no-warnings --import tsx test/*.test.ts",
     "generate-package-json": "node ./build-package-json.js",
     "copy-extra-files-dist": "cp README.md CHANGELOG.md LICENSE dist/",
     "release": "npm run build && npm publish --access public dist/"

@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Switched linter from `tslint` to `eslint`.
 - Update all the dependencies to the latest version
 - Change the module type to ES module.
+- Moved from jest to node test framework.
 
 ## [0.0.3] - 2019-04-19
 

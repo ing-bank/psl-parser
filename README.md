@@ -1,7 +1,5 @@
 # psl-parser
 
-[![Build and Test CI](https://github.com/ing-bank/psl-parser/actions/workflows/build_test.yml/badge.svg)](https://github.com/ing-bank/psl-parser/actions/workflows/build_test.yml)
-
 Implementation of a Profile Scripting Language Parser in TypeScript.
 
 ## Usage
@@ -18,7 +16,7 @@ parsedPsl.methods.forEach(method => {
 
 ## Development
 
-If you would like to join the development of this extension, you will need to
+If you would like to join the development of this project, you will need to
 install [node.js] (with npm) in order to install the dependencies.
 
 Once you clone the project, from the command line in the root of this project,

@@ -1,14 +1,12 @@
 {
-  "name": "@mischareitsma/psl-parser",
-  "version": "0.1.0-alpha1",
+  "name": "@profile-psl/psl-parser",
+  "version": "0.1.0",
   "description": "Profile Scripting Language Parser",
   "type": "module",
   "keywords": [
     "PSL",
     "parser",
-    "profile",
-    "scripting",
-    "language"
+    "Profile"
   ],
   "homepage": "https://github.com/ing-bank/psl-parser#readme",
   "bugs": {
@@ -20,7 +18,7 @@
     "SOliveira",
     {
       "name": "Mischa Reitsma",
-      "email": "Mischa.Reitsma@ing.com",
+      "email": "dev@mreitmsa.com",
       "url": "https://github.com/mischareitsma"
     }
   ],

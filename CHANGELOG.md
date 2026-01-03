@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0]
+
 ### Changed
 
 - Project split from original source [ing-bank/vscode-psl](https://github.com/ing-bank/vscode-psl.git)
@@ -40,7 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial publication.
 
-[Unreleased]: https://github.com/ing-bank/psl-parser/compare/4814107ce1840d92c2ab0de99e31887014453d4c...HEAD
+[Unreleased]: https://github.com/ing-bank/psl-parser/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/ing-bank/psl-parser/compare/4814107ce1840d92c2ab0de99e31887014453d4c...v0.1.0
 
 <!--
 The links to 0.0.3 and earlier go to the commit where the package.json

@@ -32,7 +32,10 @@ export class Token {
 
 	getRange() {
 		const startPosition: Position = this.position;
-		const endPosition: Position = { line: this.position.line, character: this.position.character + this.value.length };
+		const endPosition: Position = new Position(
+			this.position.line,
+			this.position.character + this.value.length
+		);
 		return new Range(startPosition, endPosition);
 	}
 	isWhiteSpace() {
@@ -191,18 +194,28 @@ export class Range {
 	constructor(start: Position, end: Position);
 
 	/**
-	 * Create a new range from number coordinates. It is a shorter equivalent of
-	 * using `new Range(new Position(startLine, startCharacter), new Position(endLine, endCharacter))`
+	 * Create a new range from number coordinates. It is a shorter equivalent of using
+	 * `new Range(new Position(startLine, startCharacter), new Position(endLine, endCharacter))`
 	 *
 	 * @param startLine A zero-based line value.
 	 * @param startCharacter A zero-based character value.
 	 * @param endLine A zero-based line value.
 	 * @param endCharacter A zero-based character value.
 	 */
-	constructor(startLine: number, startCharacter: number, endLine: number, endCharacter: number);
+	constructor(
+		startLine: number,
+		startCharacter: number,
+		endLine: number,
+		endCharacter: number
+	);
 
 	constructor(a: number | Position, b: number | Position, c?: number, d?: number) {
-		if (typeof a === 'number' && typeof b === 'number' && typeof c === 'number' && typeof d === 'number') {
+		if (
+			typeof a === "number" &&
+			typeof b === "number" &&
+			typeof c === "number" &&
+			typeof d === "number"
+		) {
 			this.start = new Position(a, b);
 			this.end = new Position(c, d);
 		}
@@ -257,8 +270,8 @@ class Tokenizer {
 
 		this.charType = 0;
 		this.tokenType = 0;
-		this.tokenValue = '';
-		this.tokenPosition = { line: this.documentLine, character: this.documentColumn };
+		this.tokenValue = "";
+		this.tokenPosition = new Position(this.documentLine, this.documentColumn);
 
 		this.parsed = false;
 		this.stringOpen = false;
@@ -302,15 +315,19 @@ class Tokenizer {
 				this.asterisk = false;
 				if (this.charType === Type.Slash) { // the last two chars are * /
 					this.finalizeToken(Type.BlockCommentTerm);
-					this.tokenValue = this.tokenValue + '*'; // add the * that was not yet added to the token
+					// add the * that was not yet added to the token
+					this.tokenValue = this.tokenValue + "*";
 					this.documentColumn++;
 					return true;
 				} else {
-					this.tokenValue = this.tokenValue + '*'; // add the * that was not yet added to the token
+					// add the * that was not yet added to the token
+					this.tokenValue = this.tokenValue + "*";
 					this.documentColumn++;
 				}
 			}
-			// do not add a * to the token immediately, it could be the end of a block comment
+			/* Do not add a * to the token immediately, it could be the end of a block
+			comment
+			*/
 			if (this.charType === Type.Asterisk) {
 				this.asterisk = true;
 			} else {
@@ -419,15 +436,19 @@ class Tokenizer {
 	finalizeToken(newType: number): void {
 		this.token = new Token(this.tokenType, this.tokenValue, this.tokenPosition);
 		this.tokenType = newType;
-		this.tokenValue = '';
-		this.tokenPosition = { line: this.documentLine, character: this.documentColumn };
+		this.tokenValue = "";
+		this.tokenPosition = new Position(this.documentLine, this.documentColumn);
 	}
 }
 
 function getType(c: string): Type {
 	const charCode: number = c.charCodeAt(0);
 	// Find a better way to incorporate the %
-	if (charCode >= 65 && charCode <= 90 || charCode >= 97 && charCode <= 122 || charCode === 37) {
+	if (
+		charCode >= 65 && charCode <= 90 ||
+		charCode >= 97 && charCode <= 122 ||
+		charCode === 37
+	) {
 		return Type.Alphanumeric;
 	} else if (charCode >= 48 && charCode <= 57) {
 		return Type.Numeric;
